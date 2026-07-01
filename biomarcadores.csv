@@ -1,0 +1,260 @@
+==================================================
+PÁGINA: BDD
+==================================================
+Fecha,Categoría,Parámetro,Resultado,Unidades,Intervalo de referencia
+2017-05-13,Hématologie,% LYMPHOCYTES,36.3,%,"15,0 - 45,0"
+2017-05-13,Hématologie,% MONOCYTES,7.4,%,"1,0 - 10,0"
+2017-05-13,Hématologie,% POLYNUCLÉAIRES BASOPHILES,0.6,%,"0,0 - 2,0"
+2017-05-13,Hématologie,% POLYNUCLÉAIRES ÉOSINOPHILES,1.6,%,"0,0 - 5,0"
+2017-05-13,Hématologie,% POLYNUCLÉAIRES NEUTROPHILES,52.3,%,"45,0 - 65,0"
+2017-05-13,Biochimie,25-HYDROXY VITAMINE D,13.36,ng/ml,"Insuffisance: 10,0 - 30,0"
+2019-01-17,Biochimie,Acide folique,4.05,ng/mL,3 - 20
+2024-07-20,BIOCHIMIE,Acide Urique,48,mg/L,34-70
+2019-01-17,Biochimie,Acide Urique,4.56,mg/dL,2 - 7
+2017-05-13,Biochimie,Acide Urique,5.8,mg/dl,"3,5 - 7,5"
+2017-05-13,Biochimie,ALANINE AMINOTRANSFÉRASE (ALAT/TGP),48,UI/l,"< 63,0"
+2024-07-20,MARQUEURS TUMORAUX,Antigène prostatique spécifique total (PSA),0.44,µg/L,"<4,00"
+2017-05-13,Biochimie,ASPARTATE AMINOTRANSFÉRASE (ASAT/TGO),19,UI/l,"< 40,0"
+2019-01-17,Hématologie,Basophiles,0,%,0 - 2
+2019-01-17,Urine,Bilirubine,Négatif,,Négatif
+2017-05-13,Urine,Bilirubine,Négatif,,
+2019-01-17,Biochimie,BILIRUBINE DIRECTE,0.17,mg/dL,"0,0 - 0,5"
+2017-05-13,Biochimie,BILIRUBINE DIRECTE,0.26,mg/dl,"0,0 - 0,3"
+2017-05-13,Biochimie,BILIRUBINE INDIRECTE,1.94,mg/dl,"0,0 - 1,1"
+2019-01-17,Biochimie,BILIRUBINE TOTALE,0.83,mg/dL,"0,2 - 1,2"
+2017-05-13,Biochimie,BILIRUBINE TOTALE,2.2,mg/dl,"0,2 - 1,0"
+2025-01-17,HÉMATOLOGIE,C.C.M.H.,32.2,%,"31,0-36,5"
+2024-07-20,HÉMATOLOGIE,C.C.M.H.,33.5,%,"31,0-36,5"
+2022-10-21,HÉMATOLOGIE,C.C.M.H.,32.9,%,"31,0-36,5"
+2017-05-13,Hématologie,C.C.M.H.,31.7,g/dl,"31,0 - 37,0"
+2019-01-17,Hématologie,C.C.M.H.,35.5,g/dL,"32 - 35,5"
+2019-01-17,Biochimie,Calcium,9.6,mg/dL,"8,4 - 10,2"
+2019-01-17,Hématologie,Cayados,1,%,0 - 4
+2025-01-17,BIOCHIMIE,Chlore plasmatique,102,mmol/L,98-107
+2024-07-20,BIOCHIMIE,Chlore plasmatique,104,mmol/L,98-107
+2024-07-20,BIOCHIMIE,Cholestérol,1.62,g/L,"0,50-2,00"
+2017-05-13,Biochimie,CHOLESTÉROL,146,mg/dl,"< 200,0"
+2019-01-17,Biochimie,Cholestérol HDL,43,mg/dL,35 - 65
+2017-05-13,Biochimie,CHOLESTÉROL HDL,52,mg/dl,"30,0 - 70,0"
+2019-01-17,Biochimie,Cholestérol LDL,134,mg/dL,jusqu’à 160
+2017-05-13,Biochimie,CHOLESTÉROL LDL,84,mg/dl,"< 160,0"
+2019-01-17,Biochimie,Cholestérol total,186,mg/dL,jusqu’à 240
+2019-01-17,Urine,Corps cétoniques,Négatif,,Négatif
+2017-05-13,Urine,CORPS CÉTONIQUES,Négatif,,
+2019-01-17,Biochimie,Créatine kinase (CK),67.4,U/L,38 - 174
+2024-07-20,BIOCHIMIE,Créatinine,8.7,mg/L,"6,7-11,7"
+2019-01-17,Biochimie,Créatinine,1.16,mg/dL,"0,5 - 1,3"
+2017-05-13,Biochimie,Créatinine,0.89,mg/dl,"0,70 - 1,40"
+2024-07-20,BIOCHIMIE,Débit de Filtration Glomérulaire (CKD-EPI),113,"mL/min/1,73 m2",>90
+2017-05-13,Biochimie,DÉBIT DE FILTRATION GLOMÉRULAIRE (MDRD-4),">60,00",mL/min/1.73m²,">60,0"
+2024-07-20,BIOCHIMIE,Débit de Filtration Glomérulaire (MDRD),100,"mL/min/1,73 m2",>90
+2017-05-13,Urine,DENSITÉ,">1.030,00",,"1,002 - 1,030"
+2023-09-12,MICROBIOLOGIE,Diagnostic du SARS-CoV2 (COVID19),Négatif,,
+2019-01-17,Hématologie,Eosinophiles,1,%,0 - 7
+2017-05-13,Biochimie,FER,84,µg/dl,"65,0 - 175,0"
+2019-01-17,Biochimie,Fer (Fer sérique),112,µg/dL,60 - 160
+2022-10-21,BIOCHIMIE,Ferritine,173.8,ng/mL,"30,0-400,0"
+2019-01-17,Biochimie,Ferritine,144.1,ng/mL,30 - 300
+2017-05-13,Biochimie,Ferritine,138,ng/ml,"26,0 - 388,0"
+2019-01-17,Biochimie,Filtration glomérulaire estimée,>60,"mL/min/1,73 m²",>60
+2019-01-17,Biochimie,Gamma GT,15,U/L,10 - 40
+2024-07-20,BIOCHIMIE,Gamma-glutamyl transférase G.G.T,10,U/L,8-61
+2017-05-13,Biochimie,GAMMA-GT,19,UI/l,"15,0 - 85,0"
+2019-01-17,Urine,Glucose,Négatif,,Négatif
+2017-05-13,Biochimie,Glucose,96,mg/dl,"74,0 - 106,0"
+2017-05-13,Urine,Glucose,Négatif,,
+2019-01-17,Biochimie,Glucose basal,77,mg/dL,75 - 105
+2024-07-20,BIOCHIMIE,Glycémie,0.92,g/L,"0,74-1,06"
+2019-01-17,Biochimie,GOT (AST),17,U/L,0 - 34
+2019-01-17,Biochimie,GPT (ALT),17,U/L,9 - 43
+2024-07-20,BIOCHIMIE,H.D.L. Cholestérol,0.54,g/L,">0,55"
+2019-01-17,Hématologie,HCM,31,pg,"27,5 - 33,2"
+2025-01-17,HÉMATOLOGIE,Hématies,5.24,T/L,"4,28-6,00"
+2024-07-20,HÉMATOLOGIE,Hématies,5.18,T/L,"4,28-6,00"
+2022-10-21,HÉMATOLOGIE,Hématies,4.83,T/L,"4,28-6,00"
+2019-01-17,Hématologie,Hématies,5,T/L,"3,5- 5,8"
+2019-01-17,Sédiment,Hématies,45938,/ champ,-
+2017-05-13,Hématologie,Hématies,5010000,/µL,4 500 000 - 6 500 000
+2017-05-13,Urine,Hématies,Négatif,,
+2025-01-17,HÉMATOLOGIE,Hématocrite,45.7,%,"39,0-49,0"
+2024-07-20,HÉMATOLOGIE,Hématocrite,44.8,%,"39,0-49,0"
+2022-10-21,HÉMATOLOGIE,Hématocrite,42.3,%,"39,0-53,0"
+2019-01-17,Hématologie,Hématocrite,43.7,%,36 - 64
+2017-05-13,Hématologie,Hématocrite,45.5,%,"40,0 - 54,0"
+2025-01-17,HÉMATOLOGIE,Hémoglobine,14.7,g/dL,"13,4-16,7"
+2024-07-20,HÉMATOLOGIE,Hémoglobine,15,g/dL,"13,4-16,7"
+2022-10-21,HÉMATOLOGIE,Hémoglobine,13.9,g/dL,"13,0-18,0"
+2019-01-17,Hématologie,Hémoglobine,15.5,g/dL,12 - 18
+2017-05-13,Hématologie,Hémoglobine,14.5,g/dl,"14,0 - 18,0"
+2019-01-17,Urine,Hémoglobine (érythrocytes),Positif (+),,Négatif
+2019-01-17,Biochimie,Hémoglobine glyquée (HbA1c),4.9,%,3 - 6
+2017-05-13,Biochimie,HÉMOGLOBINE GLYQUÉE (HbA1c),4.8,%,"3,0 - 6,0"
+2025-01-17,HÉMATOLOGIE,I.D.R.,12.2,%,"11,2-15,9"
+2024-07-20,HÉMATOLOGIE,I.D.R.,12,%,"11,2-15,9"
+2022-10-21,HÉMATOLOGIE,I.D.R.,12,%,"11,2-15,9"
+2017-05-13,Hématologie,I.D.R.,13.44,%,"12,0 - 15,0"
+2024-07-20,HÉMATOLOGIE,I.N.R.,1,,
+2017-05-13,Hématologie,INDICE DE DISTRIBUTION PLAQUETTAIRE,48.4,%,"39,0 - 69,0"
+2024-07-20,BIOCHIMIE,L.D.L. Cholestérol calculé,0.95,g/L,
+2017-05-13,Biochimie,LACTATE DÉSHYDROGÉNASE (LDH),117,UI/l,"85,0 - 227,0"
+2025-01-17,HÉMATOLOGIE,Leucocytes,5.54,G/L,"4,00-11,00"
+2024-07-20,HÉMATOLOGIE,Leucocytes,4.97,G/L,"4,00-11,00"
+2022-10-21,HÉMATOLOGIE,Leucocytes,4.83,G/L,"4,00-11,00"
+2019-01-17,Hématologie,Leucocytes,5600,/µL,4.000 - 10.500
+2019-01-17,Sédiment,Leucocytes,Normal,,-
+2017-05-13,Hématologie,Leucocytes,5040,/µL,4 000 - 11 000
+2017-05-13,Urine,Leucocytes,Négatif,,
+2025-01-17,HÉMATOLOGIE,Lymphocytes,2.24,G/L,"1,00-4,80"
+2024-07-20,HÉMATOLOGIE,Lymphocytes,2.36,G/L,"1,00-4,80"
+2022-10-21,HÉMATOLOGIE,Lymphocytes,1.99,G/L,"1,00-4,80"
+2019-01-17,Hématologie,Lymphocytes,33,%,25 - 40
+2017-05-13,Hématologie,Lymphocytes,1830,/µL,"1 500,0 - 5 000,0"
+2019-01-17,Biochimie,Magnésium,2,mg/dL,"1,5 - 2,4"
+2017-05-13,Biochimie,Magnésium,2,mg/dl,"1,6 - 2,4"
+2017-05-13,Urine,MICROALBUMINE,6.9,mg/l,"< 20,0"
+2025-01-17,HÉMATOLOGIE,Monocytes,0.39,G/L,"0,18-1,00"
+2024-07-20,HÉMATOLOGIE,Monocytes,0.31,G/L,"0,18-1,00"
+2022-10-21,HÉMATOLOGIE,Monocytes,0.35,G/L,"0,18-1,00"
+2019-01-17,Hématologie,Monocytes,2,%,0 - 8
+2017-05-13,Hématologie,Monocytes,370,/µL,"100,0 - 1 000,0"
+2019-01-17,Hématologie,Neutrophiles segmentés,63,%,50 - 80
+2019-01-17,Urine,Nitrites,Négatif,,Négatif
+2017-05-13,Urine,NITRITES,Négatif,,
+2019-01-17,Urine,pH,5,,"5,0 - 8,0"
+2017-05-13,Urine,pH,5.5,,
+2019-01-17,Biochimie,Phosphatase alcaline,191,U/L,Jusqu’à 270
+2017-05-13,Biochimie,Phosphatase alcaline,68,UI/l,"30,0 - 116,0"
+2019-01-17,Biochimie,Phosphore,3.4,mg/dL,"2,5 - 4,8"
+2025-01-17,HÉMATOLOGIE,Plaquettes,287,G/L,150-400
+2024-07-20,HÉMATOLOGIE,Plaquettes,223,G/L,150-400
+2022-10-21,HÉMATOLOGIE,Plaquettes,229,G/L,150-400
+2019-01-17,Hématologie,Plaquettes,213000,/µL,150.000 - 450.000
+2017-05-13,Hématologie,Plaquettes,210000,/µL,150 000 - 450 000
+2025-01-17,HÉMATOLOGIE,Polynucléaires basophiles,0.03,G/L,"0,00-0,11"
+2024-07-20,HÉMATOLOGIE,Polynucléaires basophiles,0.03,G/L,"0,00-0,11"
+2022-10-21,HÉMATOLOGIE,Polynucléaires basophiles,0.02,G/L,"0,00-0,11"
+2017-05-13,Hématologie,Polynucléaires basophiles,30,/µL,"10,0 - 200,0"
+2025-01-17,HÉMATOLOGIE,Polynucléaires éosinophiles,0.28,G/L,"0,02-0,63"
+2024-07-20,HÉMATOLOGIE,Polynucléaires éosinophiles,0.18,G/L,"0,02-0,63"
+2022-10-21,HÉMATOLOGIE,Polynucléaires éosinophiles,0.09,G/L,"0,02-0,63"
+2017-05-13,Hématologie,Polynucléaires éosinophiles,80,/µL,"50,0 - 500,0"
+2025-01-17,HÉMATOLOGIE,Polynucléaires neutrophiles,2.6,G/L,"1,80-6,90"
+2024-07-20,HÉMATOLOGIE,Polynucléaires neutrophiles,2.09,G/L,"1,80-6,90"
+2022-10-21,HÉMATOLOGIE,Polynucléaires neutrophiles,2.38,G/L,"1,40-7,70"
+2017-05-13,Hématologie,Polynucléaires neutrophiles,2640,/µL,"2 000,0 - 8 000,0"
+2019-01-17,Biochimie,Potassium,4.1,mEq/L,"3,5 - 5,1"
+2017-05-13,Biochimie,Potassium,4.2,mEq/l,"3,50 - 5,40"
+2025-01-17,BIOCHIMIE,Potassium plasmatique,4.6,mmol/L,"3,4-4,5"
+2024-07-20,BIOCHIMIE,Potassium plasmatique,4.4,mmol/L,"3,4-4,5"
+2019-01-17,Urine,Protéines,Négatif,,Négatif
+2017-05-13,Urine,Protéines,Négatif,,
+2024-07-20,HÉMATOLOGIE,Ratio TCK,1.14,,"<1,20"
+2017-05-13,Hormones,SÉROTONINE (5-HYDROXYTRYPTAMINE),187.78,ng/ml,"50,0 - 200,7"
+2019-01-17,Biochimie,Sodium,146,mEq/L,136 - 145
+2017-05-13,Biochimie,Sodium,139,mEq/l,"135,0 - 145,0"
+2025-01-17,BIOCHIMIE,Sodium plasmatique,139,mmol/L,136-145
+2024-07-20,BIOCHIMIE,Sodium plasmatique,140,mmol/L,136-145
+2025-01-17,HÉMATOLOGIE,T.C.M.H.,28.1,pg,"26,0-34,0"
+2024-07-20,HÉMATOLOGIE,T.C.M.H.,29,pg,"26,0-34,0"
+2022-10-21,HÉMATOLOGIE,T.C.M.H.,28.8,pg,"26,0-34,0"
+2017-05-13,Hématologie,T.C.M.H.,28.9,pg,"27,0 - 33,0"
+2017-05-13,Hormones,T4 LIBRE,1.24,ng/dl,"0,85 - 1,76"
+2024-07-20,HÉMATOLOGIE,Taux de prothrombine,100,%,> 70%
+2024-07-20,HÉMATOLOGIE,TCK du patient,33.4,s,
+2024-07-20,HÉMATOLOGIE,TCK du témoin,29.4,s,
+2024-07-20,HORMONOLOGIE,Testostérone,4.64,ng/mL,"2,80-8,00"
+2024-07-20,HORMONOLOGIE,Thyréostimuline (TSH),2.17,mUI/L,"0,400-4,000"
+2022-10-21,HORMONOLOGIE,Thyréostimuline (TSH),1.71,mUI/L,"0,270-4,200"
+2024-07-20,HORMONOLOGIE,Thyroxine libre (FT4),1.3,ng/dL,"0,92-1,68"
+2024-07-20,BIOCHIMIE,Transaminase S.G.O.T (ASAT),42,U/L,<50
+2024-07-20,BIOCHIMIE,Transaminase S.G.P.T. (ALAT),49,U/L,<50
+2024-07-20,BIOCHIMIE,Triglycérides,0.63,g/L,"0,50-1,50"
+2019-01-17,Biochimie,Triglycérides,47,mg/dL,40 - 160
+2017-05-13,Biochimie,Triglycérides,50,mg/dl,"< 150,0"
+2017-05-13,Hormones,TSH,1.1,mU/L,"0,55 - 4,78"
+2024-07-20,BIOCHIMIE,Urée,0.34,g/L,"0,17-0,49"
+2019-01-17,Biochimie,Urée,40,mg/dL,10 - 50
+2017-05-13,Biochimie,Urée,36,mg/dl,"15,0 - 40,0"
+2019-01-17,Urine,Urobilinogène,Négatif,,Négatif
+2017-05-13,Urine,Urobilinogène,0.2,mg/dL,
+2025-01-17,HÉMATOLOGIE,V.G.M.,87,fL,78-98
+2024-07-20,HÉMATOLOGIE,V.G.M.,87,fL,78-98
+2022-10-21,HÉMATOLOGIE,V.G.M.,88,fL,78-98
+2017-05-13,Hématologie,V.G.M.,91.1,fl,"80,0 - 99,0"
+2019-01-17,Hématologie,VCM,87.4,fl,"80,8 - 99,0"
+2019-01-17,Biochimie,Vitamine B12,348,pg/mL,150 - 1000
+2019-01-17,Biochimie,Vitamine D (25-OH),18.02,ng/mL,Insuff. 10-30 / Suff. 30-100
+2025-01-17,BIOCHIMIE,Vitamine D 25 OH (D2+D3),44.8,ng/mL,"30,0-60,0"
+2024-07-20,BIOCHIMIE,Vitamine D 25 OH (D2+D3),26.9,ng/mL,">30,0"
+2022-10-21,BIOCHIMIE,Vitamine D 25 OH (D2+D3),30.6,ng/mL,">30,0"
+2025-01-17,BIOCHIMIE,Vitamine D 25 OH (D2+D3),112,nmol/L,"75,0-150,0"
+2024-07-20,BIOCHIMIE,Vitamine D 25 OH (D2+D3),67.25,nmol/L,">74,98"
+2022-10-21,BIOCHIMIE,Vitamine D 25 OH (D2+D3),76.5,nmol/L,">74,98"
+2017-05-13,Biochimie,VITAMINE E (ALPHA-TOCOPHÉROL),1.13,µg/ml,"0,50 - 1,99"
+2025-01-17,HÉMATOLOGIE,Vitesse de sédimentation,5,mm,1-25
+2024-07-20,HÉMATOLOGIE,Vitesse de sédimentation,2,mm,1-25
+2022-10-21,HÉMATOLOGIE,Vitesse de sédimentation,2,mm,1-25
+2017-05-13,Hématologie,Vitesse de sédimentation,5,mm,"0,0 - 12,0"
+2025-01-17,HÉMATOLOGIE,Volume Plaquettaire Moyen,9.5,fL,"8,8-12,2"
+2024-07-20,HÉMATOLOGIE,Volume Plaquettaire Moyen,9.7,fL,"8,8-12,2"
+2022-10-21,HÉMATOLOGIE,Volume Plaquettaire Moyen,10.1,fL,"8,8-12,2"
+2017-05-13,Hématologie,Volume Plaquettaire Moyen,10.7,fL,"8,5 - 13,0"
+2017-05-13,Biochimie,ZINC,78.56,µg/dl,"70,0 - 120,0"
+2026-06-30,Hématologie,Hématies,5.08,T/L,"4,28-6,00"
+2026-06-30,Hématologie,Hémoglobine,14.4,g/dL,"13,4-16,7"
+2026-06-30,Hématologie,Hématocrite,44.6,%,"39,0-49,0"
+2026-06-30,Hématologie,V.G.M.,88,fL,78-98
+2026-06-30,Hématologie,T.C.M.H.,28.3,pg,"26,0-34,0"
+2026-06-30,Hématologie,C.C.M.H.,32.3,g/dL,"31,0-36,5"
+2026-06-30,Hématologie,I.D.R.,11.8,%,"11,2-15,9"
+2026-06-30,Hématologie,Leucocytes,4.76,G/L,"4,00-11,00"
+2026-06-30,Hématologie,% Polynucléaires neutrophiles,51.3,%,"45,0-65,0"
+2026-06-30,Hématologie,Polynucléaires neutrophiles,2.44,G/L,"1,80-6,90"
+2026-06-30,Hématologie,% Polynucléaires éosinophiles,2.3,%,"0,0-5,0"
+2026-06-30,Hématologie,Polynucléaires éosinophiles,0.11,G/L,"0,02-0,63"
+2026-06-30,Hématologie,% Polynucléaires basophiles,0.4,%,"0,0-2,0"
+2026-06-30,Hématologie,Polynucléaires basophiles,0.02,G/L,"0,00-0,11"
+2026-06-30,Hématologie,% Lymphocytes,33.4,%,"15,0-45,0"
+2026-06-30,Hématologie,Lymphocytes,1.59,G/L,"1,00-4,80"
+2026-06-30,Hématologie,% Monocytes,12.6,%,"1,0-10,0"
+2026-06-30,Hématologie,Monocytes,0.6,G/L,"0,18-1,00"
+2026-06-30,Hématologie,Plaquettes,250,G/L,150-400
+2026-06-30,Hématologie,Volume Plaquettaire Moyen,9.8,fL,"8,8-12,2"
+2026-06-30,Ionogramme,Sodium plasmatique,142,mmol/L,136-145
+2026-06-30,Ionogramme,Potassium plasmatique,4.1,mmol/L,"3,5-4,5"
+2026-06-30,Biochimie,Créatinine,77.6,µmol/L,"64,0-104,0"
+2026-06-30,Biochimie,DFG (CKD-EPI),111,"mL/min/1,73m2",-
+2026-06-30,Biochimie,Acide urique,395,µmol/L,"220,0-450,0"
+2026-06-30,Bilan glycémique/lipidique,Glycémie à jeun,0.9,g/L,"0,70-1,10"
+2026-06-30,Bilan glycémique/lipidique,Cholestérol total,1.75,g/L,"< 1,90"
+2026-06-30,Bilan glycémique/lipidique,Triglycérides,0.4,g/L,"< 1,50"
+2026-06-30,Bilan glycémique/lipidique,Cholestérol HDL,0.53,g/L,"0,40-0,80"
+2026-06-30,Bilan glycémique/lipidique,Cholestérol non-HDL,1.22,g/L,"< 1,50"
+2026-06-30,Bilan glycémique/lipidique,Cholestérol LDL calculé,1.14,g/L,"< 1,60"
+2026-06-30,Bilan hépatique,ALAT (TGP),21,U/L,< 45
+2026-06-30,Bilan hépatique,ASAT (TGO),26,U/L,< 35
+2026-06-30,Bilan hépatique,GGT,15,U/L,< 55
+2026-06-30,Bilan hépatique,FIB-4,0.82,-,"< 1,3"
+2026-06-30,Bilan phospho-calcique,Vitamine D 25 OH (D2+D3),72,ng/mL,"30,0-60,0"
+2026-06-30,Hormonologie,FSH,3.9,UI/L,"1,0-12,0"
+2026-06-30,Hormonologie,LH,4,UI/L,"0,6-12,1"
+2026-06-30,Hormonologie,Testostérone,4.75,ng/mL,"2,49-8,36"
+2026-06-30,Bilan thyroïdien,TSH,1.794,mUI/L,"0,400-4,000"
+2026-06-30,Bilan thyroïdien,T4 libre,11.32,ng/L,"7,00-14,80"
+2026-06-30,Bilan thyroïdien,T3 libre,2.59,ng/L,"1,58-3,91"
+
+
+==================================================
+PÁGINA: TABLA DINÁMICA
+==================================================
+SUM de Resultado,Parámetro,,,,,,Última sync: 01/07/2026 16:33:59
+Fecha,Hématocrite,Hémoglobine,Leucocytes,Plaquettes,Suma total,,
+2017-05-13,45.5,14.5,5040,210000,215100,,
+2019-01-17,43.7,15.5,5600,213000,218659.2,,
+2022-10-21,42.3,13.9,4.83,229,290.03,,
+2024-07-20,44.8,15,4.97,223,287.77,,
+2025-01-17,45.7,14.7,5.54,287,352.94,,
+2026-06-30,44.6,14.4,4.76,250,313.76,,
+Suma total,266.6,88,10660.1,423989,435003.7,,
+
+
