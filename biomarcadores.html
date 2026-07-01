@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Biomarcadores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#EFF3FB;
+    --bg-grad:#E4EAFC;
+    --surface:#FFFFFF;
+    --surface-2:#F4F6FC;
+    --ink:#161C2D;
+    --ink-soft:#5C6480;
+    --ink-faint:#9AA1B9;
+    --accent:#4C5FFF;
+    --accent-2:#7C6BFF;
+    --accent-soft:#E9EBFF;
+    --good:#0FB88A;
+    --good-soft:#DFF7EF;
+    --warn:#FF9F1C;
+    --warn-soft:#FFF1DC;
+    --bad:#FF5C6C;
+    --bad-soft:#FFE6E9;
+    --border:#E4E8F3;
+    --shadow: 0 1px 2px rgba(22,28,45,0.04), 0 8px 24px -12px rgba(22,28,45,0.12);
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --font-display: 'Sora', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 90% -10%, var(--bg-grad), transparent),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px;}
+
+  /* ---------- Header ---------- */
+  header.top{
+    position:sticky;top:0;z-index:40;
+    background:rgba(239,243,251,0.86);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .top-inner{
+    max-width:1180px;margin:0 auto;padding:18px 20px 14px;
+    display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:42px;height:42px;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 16px -4px rgba(76,95,255,0.55);
+    flex-shrink:0;
+  }
+  .brand-mark svg{width:22px;height:22px;}
+  .brand-text h1{
+    font-family:var(--font-display);font-weight:700;font-size:19px;margin:0;letter-spacing:-0.01em;
+  }
+  .brand-text p{margin:1px 0 0;font-size:12.5px;color:var(--ink-soft);}
+  .sync-chip{
+    font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);
+    background:var(--surface);border:1px solid var(--border);
+    padding:6px 11px;border-radius:999px;display:flex;align-items:center;gap:7px;
+  }
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-soft);}
+
+  .summary-row{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px 16px;max-width:1180px;margin:0 auto;}
+  .summary-chip{
+    flex:1;min-width:140px;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+    padding:12px 14px;display:flex;align-items:center;gap:11px;box-shadow:var(--shadow);
+  }
+  .summary-chip .num{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1;}
+  .summary-chip .lbl{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
+  .summary-chip .swatch{width:9px;height:32px;border-radius:5px;flex-shrink:0;}
+
+  /* ---------- Pulse signature line ---------- */
+  .pulse-wrap{max-width:1180px;margin:0 auto;padding:2px 20px 22px;}
+  .pulse-card{
+    background:linear-gradient(120deg,#1B2454 0%, #3140A8 55%, #4C5FFF 100%);
+    border-radius:var(--radius-lg);
+    padding:18px 22px;
+    position:relative;overflow:hidden;
+    box-shadow:0 14px 32px -14px rgba(49,64,168,0.55);
+  }
+  .pulse-card h2{
+    font-family:var(--font-display);color:#fff;font-size:14.5px;font-weight:600;margin:0 0 2px;
+    letter-spacing:0.01em;
+  }
+  .pulse-card p{color:rgba(255,255,255,0.72);font-size:12px;margin:0 0 10px;}
+  .pulse-svg{width:100%;height:56px;display:block;}
+  .pulse-path{
+    fill:none;stroke:url(#pulseGrad);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:1400;stroke-dashoffset:1400;
+    animation:draw 2.4s cubic-bezier(.4,0,.2,1) forwards;
+  }
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  @media (prefers-reduced-motion: reduce){.pulse-path{animation:none;stroke-dashoffset:0;}}
+
+  /* ---------- Priority section ---------- */
+  section.priority{max-width:1180px;margin:0 auto;padding:0 20px 6px;}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 12px;}
+  .section-head h3{font-family:var(--font-display);font-size:16px;margin:0;display:flex;align-items:center;gap:8px;}
+  .section-head .count{
+    font-family:var(--font-mono);font-size:11px;color:var(--ink-soft);
+    background:var(--surface-2);padding:2px 8px;border-radius:999px;
+  }
+  .priority-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .empty-note{
+    font-size:13px;color:var(--ink-soft);background:var(--good-soft);color:#0A7A5C;
+    border-radius:var(--radius-md);padding:14px 16px;display:flex;align-items:center;gap:9px;
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex;gap:8px;overflow-x:auto;padding:22px 0 4px;
+    scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex-shrink:0;font-family:var(--font-body);font-weight:600;font-size:13px;
+    padding:9px 15px;border-radius:999px;border:1px solid var(--border);
+    background:var(--surface);color:var(--ink-soft);cursor:pointer;
+    display:flex;align-items:center;gap:7px;transition:all .15s ease;
+  }
+  .tab-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .tab-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .tab-count{
+    font-family:var(--font-mono);font-size:10.5px;opacity:0.65;
+  }
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:14px 0 10px;}
+
+  /* ---------- Marker card ---------- */
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+    padding:15px 16px 14px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;gap:8px;
+    border-left:4px solid var(--border);
+  }
+  .card.st-high{border-left-color:var(--bad);}
+  .card.st-low{border-left-color:var(--warn);}
+  .card.st-ok{border-left-color:var(--good);}
+  .card.st-info{border-left-color:var(--ink-faint);}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .card-name{font-family:var(--font-display);font-weight:600;font-size:13.5px;line-height:1.25;}
+  .badge{
+    font-size:10px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase;
+    padding:3px 8px;border-radius:999px;white-space:nowrap;flex-shrink:0;
+  }
+  .badge.st-high{background:var(--bad-soft);color:#C13549;}
+  .badge.st-low{background:var(--warn-soft);color:#B36A00;}
+  .badge.st-ok{background:var(--good-soft);color:#0A7A5C;}
+  .badge.st-info{background:var(--surface-2);color:var(--ink-soft);}
+  .card-value-row{display:flex;align-items:baseline;gap:6px;}
+  .card-value{font-family:var(--font-mono);font-size:22px;font-weight:600;}
+  .card-unit{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);}
+  .card-range{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);}
+  .card-chart{height:64px;margin:2px 0 0;}
+  .card-date{font-size:10.5px;color:var(--ink-faint);}
+  .card-tip{
+    margin-top:4px;padding:9px 10px;border-radius:var(--radius-sm);
+    background:var(--surface-2);font-size:11.5px;line-height:1.5;color:var(--ink-soft);
+  }
+  .card-tip.tip-high{background:var(--bad-soft);color:#8C2436;}
+  .card-tip.tip-low{background:var(--warn-soft);color:#7A4700;}
+  .card-tip b{font-weight:700;}
+  .card-tip .tip-cat{display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;font-weight:700;opacity:0.75;margin-top:5px;}
+  .card-tip .tip-cat:first-child{margin-top:0;}
+
+  footer{
+    max-width:1180px;margin:26px auto 0;padding:18px 20px;
+    font-size:11.5px;color:var(--ink-faint);border-top:1px solid var(--border);
+    line-height:1.6;
+  }
+
+  @media (max-width:640px){
+    .card-name{font-size:12.5px;}
+    .card-value{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 12H7L9.5 5L14 19L16.5 12H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Panel de Biomarcadores</h1>
+        <p>Evolución 2017 – 2026 · <span id="markerTotal">0</span> marcadores</p>
+      </div>
+    </div>
+    <div class="sync-chip"><span class="sync-dot"></span>Última analítica: <span id="lastSyncDate"></span></div>
+  </div>
+  <div class="summary-row" id="summaryRow"></div>
+</header>
+
+<div class="wrap">
+
+  <div class="pulse-wrap">
+    <div class="pulse-card">
+      <h2>Última lectura completa · 30 jun 2026</h2>
+      <p>Vista rápida de tu estado general a partir del panel más reciente.</p>
+      <svg class="pulse-svg" viewBox="0 0 1000 60" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="pulseGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#8FD9FF"/>
+            <stop offset="50%" stop-color="#FFFFFF"/>
+            <stop offset="100%" stop-color="#B7C3FF"/>
+          </linearGradient>
+        </defs>
+        <path class="pulse-path" d="M0,30 L120,30 L145,30 L160,8 L178,52 L196,16 L212,30 L340,30 L365,30 L380,10 L398,50 L416,18 L432,30 L560,30 L585,30 L600,6 L618,54 L636,14 L652,30 L780,30 L805,30 L820,9 L838,51 L856,17 L872,30 L1000,30"/>
+      </svg>
+    </div>
+  </div>
+
+  <section class="priority">
+    <div class="section-head">
+      <h3>🔴 Prioridad alta — fuera de rango</h3>
+      <span class="count" id="highCount">0</span>
+    </div>
+    <div class="priority-grid" id="highGrid"></div>
+
+    <div class="section-head">
+      <h3>🟡 Prioridad media — en el límite / a vigilar</h3>
+      <span class="count" id="medCount">0</span>
+    </div>
+    <div class="priority-grid" id="medGrid"></div>
+  </section>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Este panel organiza tus resultados de laboratorio (2017–2026) con fines de seguimiento personal.
+    Las sugerencias de alimentación y estilo de vida son de carácter general y educativo — no sustituyen
+    una valoración médica. Ante cualquier valor fuera de rango, especialmente si es persistente o nuevo,
+    consulta con tu médico o especialista antes de cambiar tratamientos, suplementos o hábitos.
+    Cuando un marcador cambió de unidad de medida entre analíticas (ej. creatinina, colesterol, recuentos
+    celulares), los valores se normalizaron a una unidad común para que la evolución sea comparable.
+  </footer>
+</div>
+
+<script id="data-json" type="application/json">{"meta": {"hema": {"label": "Hematología", "icon": "🩸"}, "bioq": {"label": "Bioquímica general", "icon": "⚗️"}, "lip": {"label": "Perfil lipídico y metabólico", "icon": "🍽️"}, "hep": {"label": "Función hepática", "icon": "🫀"}, "ren": {"label": "Función renal", "icon": "💧"}, "tir": {"label": "Función tiroidea", "icon": "🦋"}, "hor": {"label": "Hormonas", "icon": "🧬"}, "vit": {"label": "Vitaminas y minerales", "icon": "🌿"}, "ori": {"label": "Orina y otros", "icon": "🧪"}}, "grupos": {"hema": [{"nombre": "Basófilos %", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 0.6, "valor_original": 0.6, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "0,0 - 2,0", "rango_parsed": {"min": 0.0, "max": 2.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 0.0, "valor_original": 0.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "0 - 2", "rango_parsed": {"min": 0.0, "max": 2.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 0.4, "valor_original": 0.4, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "0,0-2,0", "rango_parsed": {"min": 0.0, "max": 2.0}, "estado": "ok"}]}, {"nombre": "Basófilos (valor absoluto)", "unidad": "G/L", "puntos": [{"fecha": "2017-05-13", "valor": 0.03, "valor_original": 30.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "10,0 - 200,0", "rango_parsed": {"min": 10.0, "max": 200.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 0.02, "valor_original": 0.02, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,00-0,11", "rango_parsed": {"min": 0.0, "max": 0.11}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 0.03, "valor_original": 0.03, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,00-0,11", "rango_parsed": {"min": 0.0, "max": 0.11}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 0.03, "valor_original": 0.03, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,00-0,11", "rango_parsed": {"min": 0.0, "max": 0.11}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 0.02, "valor_original": 0.02, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,00-0,11", "rango_parsed": {"min": 0.0, "max": 0.11}, "estado": "ok"}]}, {"nombre": "CCMH", "unidad": "g/dL", "puntos": [{"fecha": "2017-05-13", "valor": 31.7, "valor_original": 31.7, "unidad_original": "g/dl", "texto": null, "unidad": "g/dl", "rango": "31,0 - 37,0", "rango_parsed": {"min": 31.0, "max": 37.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 35.5, "valor_original": 35.5, "unidad_original": "g/dL", "texto": null, "unidad": "g/dL", "rango": "32 - 35,5", "rango_parsed": {"min": 32.0, "max": 35.5}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 32.9, "valor_original": 32.9, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "31,0-36,5", "rango_parsed": {"min": 31.0, "max": 36.5}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 33.5, "valor_original": 33.5, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "31,0-36,5", "rango_parsed": {"min": 31.0, "max": 36.5}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 32.2, "valor_original": 32.2, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "31,0-36,5", "rango_parsed": {"min": 31.0, "max": 36.5}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 32.3, "valor_original": 32.3, "unidad_original": "g/dL", "texto": null, "unidad": "g/dL", "rango": "31,0-36,5", "rango_parsed": {"min": 31.0, "max": 36.5}, "estado": "ok"}]}, {"nombre": "Cayados", "unidad": "%", "puntos": [{"fecha": "2019-01-17", "valor": 1.0, "valor_original": 1.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "0 - 4", "rango_parsed": {"min": 0.0, "max": 4.0}, "estado": "ok"}]}, {"nombre": "Eosinófilos %", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 1.6, "valor_original": 1.6, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "0,0 - 5,0", "rango_parsed": {"min": 0.0, "max": 5.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 1.0, "valor_original": 1.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "0 - 7", "rango_parsed": {"min": 0.0, "max": 7.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 2.3, "valor_original": 2.3, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "0,0-5,0", "rango_parsed": {"min": 0.0, "max": 5.0}, "estado": "ok"}]}, {"nombre": "Eosinófilos (valor absoluto)", "unidad": "G/L", "puntos": [{"fecha": "2017-05-13", "valor": 0.08, "valor_original": 80.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "50,0 - 500,0", "rango_parsed": {"min": 50.0, "max": 500.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 0.09, "valor_original": 0.09, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,02-0,63", "rango_parsed": {"min": 0.02, "max": 0.63}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 0.18, "valor_original": 0.18, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,02-0,63", "rango_parsed": {"min": 0.02, "max": 0.63}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 0.28, "valor_original": 0.28, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,02-0,63", "rango_parsed": {"min": 0.02, "max": 0.63}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 0.11, "valor_original": 0.11, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,02-0,63", "rango_parsed": {"min": 0.02, "max": 0.63}, "estado": "ok"}]}, {"nombre": "HCM (hemoglobina corpuscular media)", "unidad": "pg", "puntos": [{"fecha": "2017-05-13", "valor": 28.9, "valor_original": 28.9, "unidad_original": "pg", "texto": null, "unidad": "pg", "rango": "27,0 - 33,0", "rango_parsed": {"min": 27.0, "max": 33.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 31.0, "valor_original": 31.0, "unidad_original": "pg", "texto": null, "unidad": "pg", "rango": "27,5 - 33,2", "rango_parsed": {"min": 27.5, "max": 33.2}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 28.8, "valor_original": 28.8, "unidad_original": "pg", "texto": null, "unidad": "pg", "rango": "26,0-34,0", "rango_parsed": {"min": 26.0, "max": 34.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 29.0, "valor_original": 29.0, "unidad_original": "pg", "texto": null, "unidad": "pg", "rango": "26,0-34,0", "rango_parsed": {"min": 26.0, "max": 34.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 28.1, "valor_original": 28.1, "unidad_original": "pg", "texto": null, "unidad": "pg", "rango": "26,0-34,0", "rango_parsed": {"min": 26.0, "max": 34.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 28.3, "valor_original": 28.3, "unidad_original": "pg", "texto": null, "unidad": "pg", "rango": "26,0-34,0", "rango_parsed": {"min": 26.0, "max": 34.0}, "estado": "ok"}]}, {"nombre": "Hematocrito", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 45.5, "valor_original": 45.5, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "40,0 - 54,0", "rango_parsed": {"min": 40.0, "max": 54.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 43.7, "valor_original": 43.7, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "36 - 64", "rango_parsed": {"min": 36.0, "max": 64.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 42.3, "valor_original": 42.3, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "39,0-53,0", "rango_parsed": {"min": 39.0, "max": 53.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 44.8, "valor_original": 44.8, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "39,0-49,0", "rango_parsed": {"min": 39.0, "max": 49.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 45.7, "valor_original": 45.7, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "39,0-49,0", "rango_parsed": {"min": 39.0, "max": 49.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 44.6, "valor_original": 44.6, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "39,0-49,0", "rango_parsed": {"min": 39.0, "max": 49.0}, "estado": "ok"}]}, {"nombre": "Hematíes", "unidad": "T/L", "puntos": [{"fecha": "2017-05-13", "valor": 5.01, "valor_original": 5010000.0, "unidad_original": "/µL", "texto": null, "unidad": "T/L", "rango": "4 500 000 - 6 500 000", "rango_parsed": {"min": 0.0, "max": 6.0}, "estado": "high"}, {"fecha": "2019-01-17", "valor": 5.0, "valor_original": 5.0, "unidad_original": "T/L", "texto": null, "unidad": "T/L", "rango": "3,5- 5,8", "rango_parsed": {"min": 3.5, "max": 5.8}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 4.83, "valor_original": 4.83, "unidad_original": "T/L", "texto": null, "unidad": "T/L", "rango": "4,28-6,00", "rango_parsed": {"min": 4.28, "max": 6.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 5.18, "valor_original": 5.18, "unidad_original": "T/L", "texto": null, "unidad": "T/L", "rango": "4,28-6,00", "rango_parsed": {"min": 4.28, "max": 6.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 5.24, "valor_original": 5.24, "unidad_original": "T/L", "texto": null, "unidad": "T/L", "rango": "4,28-6,00", "rango_parsed": {"min": 4.28, "max": 6.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 5.08, "valor_original": 5.08, "unidad_original": "T/L", "texto": null, "unidad": "T/L", "rango": "4,28-6,00", "rango_parsed": {"min": 4.28, "max": 6.0}, "estado": "ok"}]}, {"nombre": "Hemoglobina", "unidad": "g/dL", "puntos": [{"fecha": "2017-05-13", "valor": 14.5, "valor_original": 14.5, "unidad_original": "g/dl", "texto": null, "unidad": "g/dl", "rango": "14,0 - 18,0", "rango_parsed": {"min": 14.0, "max": 18.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 15.5, "valor_original": 15.5, "unidad_original": "g/dL", "texto": null, "unidad": "g/dL", "rango": "12 - 18", "rango_parsed": {"min": 12.0, "max": 18.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 13.9, "valor_original": 13.9, "unidad_original": "g/dL", "texto": null, "unidad": "g/dL", "rango": "13,0-18,0", "rango_parsed": {"min": 13.0, "max": 18.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 15.0, "valor_original": 15.0, "unidad_original": "g/dL", "texto": null, "unidad": "g/dL", "rango": "13,4-16,7", "rango_parsed": {"min": 13.4, "max": 16.7}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 14.7, "valor_original": 14.7, "unidad_original": "g/dL", "texto": null, "unidad": "g/dL", "rango": "13,4-16,7", "rango_parsed": {"min": 13.4, "max": 16.7}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 14.4, "valor_original": 14.4, "unidad_original": "g/dL", "texto": null, "unidad": "g/dL", "rango": "13,4-16,7", "rango_parsed": {"min": 13.4, "max": 16.7}, "estado": "ok"}]}, {"nombre": "IDR (amplitud distribución eritrocitaria)", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 13.44, "valor_original": 13.44, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "12,0 - 15,0", "rango_parsed": {"min": 12.0, "max": 15.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 12.0, "valor_original": 12.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "11,2-15,9", "rango_parsed": {"min": 11.2, "max": 15.9}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 12.0, "valor_original": 12.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "11,2-15,9", "rango_parsed": {"min": 11.2, "max": 15.9}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 12.2, "valor_original": 12.2, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "11,2-15,9", "rango_parsed": {"min": 11.2, "max": 15.9}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 11.8, "valor_original": 11.8, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "11,2-15,9", "rango_parsed": {"min": 11.2, "max": 15.9}, "estado": "ok"}]}, {"nombre": "INR", "unidad": "", "puntos": [{"fecha": "2024-07-20", "valor": 1.0, "valor_original": 1.0, "unidad_original": "", "texto": null, "unidad": "", "rango": "", "rango_parsed": null, "estado": "info"}]}, {"nombre": "Leucocitos", "unidad": "G/L", "puntos": [{"fecha": "2017-05-13", "valor": 5.04, "valor_original": 5040.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "4 000 - 11 000", "rango_parsed": {"min": 0.0, "max": 11.0}, "estado": "high"}, {"fecha": "2019-01-17", "valor": 5.6, "valor_original": 5600.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "4.000 - 10.500", "rango_parsed": {"min": 4000.0, "max": 10500.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 4.83, "valor_original": 4.83, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "4,00-11,00", "rango_parsed": {"min": 4.0, "max": 11.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 4.97, "valor_original": 4.97, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "4,00-11,00", "rango_parsed": {"min": 4.0, "max": 11.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 5.54, "valor_original": 5.54, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "4,00-11,00", "rango_parsed": {"min": 4.0, "max": 11.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 4.76, "valor_original": 4.76, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "4,00-11,00", "rango_parsed": {"min": 4.0, "max": 11.0}, "estado": "ok"}]}, {"nombre": "Linfocitos %", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 36.3, "valor_original": 36.3, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "15,0 - 45,0", "rango_parsed": {"min": 15.0, "max": 45.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 33.0, "valor_original": 33.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "25 - 40", "rango_parsed": {"min": 25.0, "max": 40.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 33.4, "valor_original": 33.4, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "15,0-45,0", "rango_parsed": {"min": 15.0, "max": 45.0}, "estado": "ok"}]}, {"nombre": "Linfocitos (valor absoluto)", "unidad": "G/L", "puntos": [{"fecha": "2017-05-13", "valor": 1.83, "valor_original": 1830.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "1 500,0 - 5 000,0", "rango_parsed": {"min": 500.0, "max": 5.0}, "estado": "high"}, {"fecha": "2022-10-21", "valor": 1.99, "valor_original": 1.99, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "1,00-4,80", "rango_parsed": {"min": 1.0, "max": 4.8}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 2.36, "valor_original": 2.36, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "1,00-4,80", "rango_parsed": {"min": 1.0, "max": 4.8}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 2.24, "valor_original": 2.24, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "1,00-4,80", "rango_parsed": {"min": 1.0, "max": 4.8}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 1.59, "valor_original": 1.59, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "1,00-4,80", "rango_parsed": {"min": 1.0, "max": 4.8}, "estado": "ok"}]}, {"nombre": "Monocitos %", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 7.4, "valor_original": 7.4, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "1,0 - 10,0", "rango_parsed": {"min": 1.0, "max": 10.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 2.0, "valor_original": 2.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "0 - 8", "rango_parsed": {"min": 0.0, "max": 8.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 12.6, "valor_original": 12.6, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "1,0-10,0", "rango_parsed": {"min": 1.0, "max": 10.0}, "estado": "high"}]}, {"nombre": "Monocitos (valor absoluto)", "unidad": "G/L", "puntos": [{"fecha": "2017-05-13", "valor": 0.37, "valor_original": 370.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "100,0 - 1 000,0", "rango_parsed": {"min": 100.0, "max": 1.0}, "estado": "high"}, {"fecha": "2022-10-21", "valor": 0.35, "valor_original": 0.35, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,18-1,00", "rango_parsed": {"min": 0.18, "max": 1.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 0.31, "valor_original": 0.31, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,18-1,00", "rango_parsed": {"min": 0.18, "max": 1.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 0.39, "valor_original": 0.39, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,18-1,00", "rango_parsed": {"min": 0.18, "max": 1.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 0.6, "valor_original": 0.6, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "0,18-1,00", "rango_parsed": {"min": 0.18, "max": 1.0}, "estado": "ok"}]}, {"nombre": "Neutrófilos %", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 52.3, "valor_original": 52.3, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "45,0 - 65,0", "rango_parsed": {"min": 45.0, "max": 65.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 51.3, "valor_original": 51.3, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "45,0-65,0", "rango_parsed": {"min": 45.0, "max": 65.0}, "estado": "ok"}]}, {"nombre": "Neutrófilos (valor absoluto)", "unidad": "G/L", "puntos": [{"fecha": "2017-05-13", "valor": 2.64, "valor_original": 2640.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "2 000,0 - 8 000,0", "rango_parsed": {"min": 0.0, "max": 8.0}, "estado": "high"}, {"fecha": "2022-10-21", "valor": 2.38, "valor_original": 2.38, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "1,40-7,70", "rango_parsed": {"min": 1.4, "max": 7.7}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 2.09, "valor_original": 2.09, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "1,80-6,90", "rango_parsed": {"min": 1.8, "max": 6.9}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 2.6, "valor_original": 2.6, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "1,80-6,90", "rango_parsed": {"min": 1.8, "max": 6.9}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 2.44, "valor_original": 2.44, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "1,80-6,90", "rango_parsed": {"min": 1.8, "max": 6.9}, "estado": "ok"}]}, {"nombre": "Neutrófilos segmentados %", "unidad": "%", "puntos": [{"fecha": "2019-01-17", "valor": 63.0, "valor_original": 63.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "50 - 80", "rango_parsed": {"min": 50.0, "max": 80.0}, "estado": "ok"}]}, {"nombre": "Plaquetas", "unidad": "G/L", "puntos": [{"fecha": "2017-05-13", "valor": 210.0, "valor_original": 210000.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "150 000 - 450 000", "rango_parsed": {"min": 0.0, "max": 450.0}, "estado": "high"}, {"fecha": "2019-01-17", "valor": 213.0, "valor_original": 213000.0, "unidad_original": "/µL", "texto": null, "unidad": "G/L", "rango": "150.000 - 450.000", "rango_parsed": {"min": 150000.0, "max": 450000.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 229.0, "valor_original": 229.0, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "150-400", "rango_parsed": {"min": 150.0, "max": 400.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 223.0, "valor_original": 223.0, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "150-400", "rango_parsed": {"min": 150.0, "max": 400.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 287.0, "valor_original": 287.0, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "150-400", "rango_parsed": {"min": 150.0, "max": 400.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 250.0, "valor_original": 250.0, "unidad_original": "G/L", "texto": null, "unidad": "G/L", "rango": "150-400", "rango_parsed": {"min": 150.0, "max": 400.0}, "estado": "ok"}]}, {"nombre": "Ratio TCK", "unidad": "", "puntos": [{"fecha": "2024-07-20", "valor": 1.14, "valor_original": 1.14, "unidad_original": "", "texto": null, "unidad": "", "rango": "<1,20", "rango_parsed": {"op": "<", "value": 1.2}, "estado": "ok"}]}, {"nombre": "TCK del paciente", "unidad": "s", "puntos": [{"fecha": "2024-07-20", "valor": 33.4, "valor_original": 33.4, "unidad_original": "s", "texto": null, "unidad": "s", "rango": "", "rango_parsed": null, "estado": "info"}]}, {"nombre": "TCK testigo", "unidad": "s", "puntos": [{"fecha": "2024-07-20", "valor": 29.4, "valor_original": 29.4, "unidad_original": "s", "texto": null, "unidad": "s", "rango": "", "rango_parsed": null, "estado": "info"}]}, {"nombre": "Tasa de protrombina", "unidad": "%", "puntos": [{"fecha": "2024-07-20", "valor": 100.0, "valor_original": 100.0, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "> 70%", "rango_parsed": null, "estado": "info"}]}, {"nombre": "VCM (volumen corpuscular medio)", "unidad": "fL", "puntos": [{"fecha": "2017-05-13", "valor": 91.1, "valor_original": 91.1, "unidad_original": "fl", "texto": null, "unidad": "fl", "rango": "80,0 - 99,0", "rango_parsed": {"min": 80.0, "max": 99.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 87.4, "valor_original": 87.4, "unidad_original": "fl", "texto": null, "unidad": "fl", "rango": "80,8 - 99,0", "rango_parsed": {"min": 80.8, "max": 99.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 88.0, "valor_original": 88.0, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "78-98", "rango_parsed": {"min": 78.0, "max": 98.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 87.0, "valor_original": 87.0, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "78-98", "rango_parsed": {"min": 78.0, "max": 98.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 87.0, "valor_original": 87.0, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "78-98", "rango_parsed": {"min": 78.0, "max": 98.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 88.0, "valor_original": 88.0, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "78-98", "rango_parsed": {"min": 78.0, "max": 98.0}, "estado": "ok"}]}, {"nombre": "VPM (volumen plaquetario medio)", "unidad": "fL", "puntos": [{"fecha": "2017-05-13", "valor": 10.7, "valor_original": 10.7, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "8,5 - 13,0", "rango_parsed": {"min": 8.5, "max": 13.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 10.1, "valor_original": 10.1, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "8,8-12,2", "rango_parsed": {"min": 8.8, "max": 12.2}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 9.7, "valor_original": 9.7, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "8,8-12,2", "rango_parsed": {"min": 8.8, "max": 12.2}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 9.5, "valor_original": 9.5, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "8,8-12,2", "rango_parsed": {"min": 8.8, "max": 12.2}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 9.8, "valor_original": 9.8, "unidad_original": "fL", "texto": null, "unidad": "fL", "rango": "8,8-12,2", "rango_parsed": {"min": 8.8, "max": 12.2}, "estado": "ok"}]}, {"nombre": "VSG (velocidad de sedimentación)", "unidad": "mm", "puntos": [{"fecha": "2017-05-13", "valor": 5.0, "valor_original": 5.0, "unidad_original": "mm", "texto": null, "unidad": "mm", "rango": "0,0 - 12,0", "rango_parsed": {"min": 0.0, "max": 12.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 2.0, "valor_original": 2.0, "unidad_original": "mm", "texto": null, "unidad": "mm", "rango": "1-25", "rango_parsed": {"min": 1.0, "max": 25.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 2.0, "valor_original": 2.0, "unidad_original": "mm", "texto": null, "unidad": "mm", "rango": "1-25", "rango_parsed": {"min": 1.0, "max": 25.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 5.0, "valor_original": 5.0, "unidad_original": "mm", "texto": null, "unidad": "mm", "rango": "1-25", "rango_parsed": {"min": 1.0, "max": 25.0}, "estado": "ok"}]}, {"nombre": "Índice de distribución plaquetaria", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 48.4, "valor_original": 48.4, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "39,0 - 69,0", "rango_parsed": {"min": 39.0, "max": 69.0}, "estado": "ok"}]}], "vit": [{"nombre": "Ferritina", "unidad": "ng/ml", "puntos": [{"fecha": "2017-05-13", "valor": 138.0, "valor_original": 138.0, "unidad_original": "ng/ml", "texto": null, "unidad": "ng/ml", "rango": "26,0 - 388,0", "rango_parsed": {"min": 26.0, "max": 388.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 144.1, "valor_original": 144.1, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": "30 - 300", "rango_parsed": {"min": 30.0, "max": 300.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 173.8, "valor_original": 173.8, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": "30,0-400,0", "rango_parsed": {"min": 30.0, "max": 400.0}, "estado": "ok"}]}, {"nombre": "Hierro sérico", "unidad": "µg/dL", "puntos": [{"fecha": "2017-05-13", "valor": 84.0, "valor_original": 84.0, "unidad_original": "µg/dl", "texto": null, "unidad": "µg/dl", "rango": "65,0 - 175,0", "rango_parsed": {"min": 65.0, "max": 175.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 112.0, "valor_original": 112.0, "unidad_original": "µg/dL", "texto": null, "unidad": "µg/dL", "rango": "60 - 160", "rango_parsed": {"min": 60.0, "max": 160.0}, "estado": "ok"}]}, {"nombre": "Vitamina B12", "unidad": "pg/mL", "puntos": [{"fecha": "2019-01-17", "valor": 348.0, "valor_original": 348.0, "unidad_original": "pg/mL", "texto": null, "unidad": "pg/mL", "rango": "150 - 1000", "rango_parsed": {"min": 150.0, "max": 1000.0}, "estado": "ok"}]}, {"nombre": "Vitamina D (25-OH)", "unidad": "ng/mL", "puntos": [{"fecha": "2017-05-13", "valor": 13.36, "valor_original": 13.36, "unidad_original": "ng/ml", "texto": null, "unidad": "ng/ml", "rango": "Insuffisance: 10,0 - 30,0", "rango_parsed": {"min": 10.0, "max": 30.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 18.02, "valor_original": 18.02, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": "Insuff. 10-30 / Suff. 30-100", "rango_parsed": {"min": 30.0, "max": 100.0}, "estado": "low"}, {"fecha": "2022-10-21", "valor": 30.6, "valor_original": 30.6, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": ">30,0", "rango_parsed": {"op": ">", "value": 30.0}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 76.5, "valor_original": 76.5, "unidad_original": "nmol/L", "texto": null, "unidad": "nmol/L", "rango": ">74,98", "rango_parsed": {"op": ">", "value": 74.98}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 26.9, "valor_original": 26.9, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": ">30,0", "rango_parsed": {"op": ">", "value": 30.0}, "estado": "low"}, {"fecha": "2024-07-20", "valor": 67.25, "valor_original": 67.25, "unidad_original": "nmol/L", "texto": null, "unidad": "nmol/L", "rango": ">74,98", "rango_parsed": {"op": ">", "value": 74.98}, "estado": "low"}, {"fecha": "2025-01-17", "valor": 44.8, "valor_original": 44.8, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": "30,0-60,0", "rango_parsed": {"min": 30.0, "max": 60.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 112.0, "valor_original": 112.0, "unidad_original": "nmol/L", "texto": null, "unidad": "nmol/L", "rango": "75,0-150,0", "rango_parsed": {"min": 75.0, "max": 150.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 72.0, "valor_original": 72.0, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": "30,0-60,0", "rango_parsed": {"min": 30.0, "max": 60.0}, "estado": "high"}]}, {"nombre": "Vitamina E", "unidad": "µg/ml", "puntos": [{"fecha": "2017-05-13", "valor": 1.13, "valor_original": 1.13, "unidad_original": "µg/ml", "texto": null, "unidad": "µg/ml", "rango": "0,50 - 1,99", "rango_parsed": {"min": 0.5, "max": 1.99}, "estado": "ok"}]}, {"nombre": "Ácido fólico", "unidad": "ng/mL", "puntos": [{"fecha": "2019-01-17", "valor": 4.05, "valor_original": 4.05, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": "3 - 20", "rango_parsed": {"min": 3.0, "max": 20.0}, "estado": "ok"}]}], "lip": [{"nombre": "Colesterol HDL", "unidad": "g/L", "puntos": [{"fecha": "2017-05-13", "valor": 0.52, "valor_original": 52.0, "unidad_original": "mg/dl", "texto": null, "unidad": "g/L", "rango": "30,0 - 70,0", "rango_parsed": {"min": 30.0, "max": 70.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 0.43, "valor_original": 43.0, "unidad_original": "mg/dL", "texto": null, "unidad": "g/L", "rango": "35 - 65", "rango_parsed": {"min": 35.0, "max": 65.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 0.54, "valor_original": 0.54, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": ">0,55", "rango_parsed": {"op": ">", "value": 0.55}, "estado": "low"}, {"fecha": "2026-06-30", "valor": 0.53, "valor_original": 0.53, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": "0,40-0,80", "rango_parsed": {"min": 0.4, "max": 0.8}, "estado": "ok"}]}, {"nombre": "Colesterol LDL", "unidad": "g/L", "puntos": [{"fecha": "2017-05-13", "valor": 0.84, "valor_original": 84.0, "unidad_original": "mg/dl", "texto": null, "unidad": "g/L", "rango": "< 160,0", "rango_parsed": {"op": "<", "value": 160.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 1.34, "valor_original": 134.0, "unidad_original": "mg/dL", "texto": null, "unidad": "g/L", "rango": "jusqu’à 160", "rango_parsed": null, "estado": "info"}, {"fecha": "2024-07-20", "valor": 0.95, "valor_original": 0.95, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": "", "rango_parsed": null, "estado": "info"}, {"fecha": "2026-06-30", "valor": 1.14, "valor_original": 1.14, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": "< 1,60", "rango_parsed": {"op": "<", "value": 1.6}, "estado": "ok"}]}, {"nombre": "Colesterol no-HDL", "unidad": "g/L", "puntos": [{"fecha": "2026-06-30", "valor": 1.22, "valor_original": 1.22, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": "< 1,50", "rango_parsed": {"op": "<", "value": 1.5}, "estado": "ok"}]}, {"nombre": "Colesterol total", "unidad": "g/L", "puntos": [{"fecha": "2017-05-13", "valor": 1.46, "valor_original": 146.0, "unidad_original": "mg/dl", "texto": null, "unidad": "g/L", "rango": "< 200,0", "rango_parsed": {"op": "<", "value": 200.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 1.86, "valor_original": 186.0, "unidad_original": "mg/dL", "texto": null, "unidad": "g/L", "rango": "jusqu’à 240", "rango_parsed": null, "estado": "info"}, {"fecha": "2024-07-20", "valor": 1.62, "valor_original": 1.62, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": "0,50-2,00", "rango_parsed": {"min": 0.5, "max": 2.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 1.75, "valor_original": 1.75, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": "< 1,90", "rango_parsed": {"op": "<", "value": 1.9}, "estado": "ok"}]}, {"nombre": "Glucosa (glicemia)", "unidad": "mg/dL", "puntos": [{"fecha": "2017-05-13", "valor": 96.0, "valor_original": 96.0, "unidad_original": "mg/dl", "texto": null, "unidad": "mg/dL", "rango": "74,0 - 106,0", "rango_parsed": {"min": 74.0, "max": 106.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 77.0, "valor_original": 77.0, "unidad_original": "mg/dL", "texto": null, "unidad": "mg/dL", "rango": "75 - 105", "rango_parsed": {"min": 75.0, "max": 105.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 92.0, "valor_original": 0.92, "unidad_original": "g/L", "texto": null, "unidad": "mg/dL", "rango": "0,74-1,06", "rango_parsed": {"min": 0.74, "max": 1.06}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 90.0, "valor_original": 0.9, "unidad_original": "g/L", "texto": null, "unidad": "mg/dL", "rango": "0,70-1,10", "rango_parsed": {"min": 0.7, "max": 1.1}, "estado": "ok"}]}, {"nombre": "Hemoglobina glicosilada (HbA1c)", "unidad": "%", "puntos": [{"fecha": "2017-05-13", "valor": 4.8, "valor_original": 4.8, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "3,0 - 6,0", "rango_parsed": {"min": 3.0, "max": 6.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 4.9, "valor_original": 4.9, "unidad_original": "%", "texto": null, "unidad": "%", "rango": "3 - 6", "rango_parsed": {"min": 3.0, "max": 6.0}, "estado": "ok"}]}, {"nombre": "Triglicéridos", "unidad": "g/L", "puntos": [{"fecha": "2017-05-13", "valor": 0.5, "valor_original": 50.0, "unidad_original": "mg/dl", "texto": null, "unidad": "g/L", "rango": "< 150,0", "rango_parsed": {"op": "<", "value": 150.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 0.47, "valor_original": 47.0, "unidad_original": "mg/dL", "texto": null, "unidad": "g/L", "rango": "40 - 160", "rango_parsed": {"min": 40.0, "max": 160.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 0.63, "valor_original": 0.63, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": "0,50-1,50", "rango_parsed": {"min": 0.5, "max": 1.5}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 0.4, "valor_original": 0.4, "unidad_original": "g/L", "texto": null, "unidad": "g/L", "rango": "< 1,50", "rango_parsed": {"op": "<", "value": 1.5}, "estado": "ok"}]}, {"nombre": "Ácido úrico", "unidad": "µmol/L", "puntos": [{"fecha": "2017-05-13", "valor": 344.984, "valor_original": 5.8, "unidad_original": "mg/dl", "texto": null, "unidad": "µmol/L", "rango": "3,5 - 7,5", "rango_parsed": {"min": 3.5, "max": 7.5}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 271.229, "valor_original": 4.56, "unidad_original": "mg/dL", "texto": null, "unidad": "µmol/L", "rango": "2 - 7", "rango_parsed": {"min": 2.0, "max": 7.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 285.504, "valor_original": 48.0, "unidad_original": "mg/L", "texto": null, "unidad": "µmol/L", "rango": "34-70", "rango_parsed": {"min": 34.0, "max": 70.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 395.0, "valor_original": 395.0, "unidad_original": "µmol/L", "texto": null, "unidad": "µmol/L", "rango": "220,0-450,0", "rango_parsed": {"min": 220.0, "max": 450.0}, "estado": "ok"}]}], "hep": [{"nombre": "ALAT / GPT (transaminasa)", "unidad": "U/L", "puntos": [{"fecha": "2017-05-13", "valor": 48.0, "valor_original": 48.0, "unidad_original": "UI/l", "texto": null, "unidad": "UI/l", "rango": "< 63,0", "rango_parsed": {"op": "<", "value": 63.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 17.0, "valor_original": 17.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "9 - 43", "rango_parsed": {"min": 9.0, "max": 43.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 49.0, "valor_original": 49.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "<50", "rango_parsed": {"op": "<", "value": 50.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 21.0, "valor_original": 21.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "< 45", "rango_parsed": {"op": "<", "value": 45.0}, "estado": "ok"}]}, {"nombre": "ASAT / GOT (transaminasa)", "unidad": "U/L", "puntos": [{"fecha": "2017-05-13", "valor": 19.0, "valor_original": 19.0, "unidad_original": "UI/l", "texto": null, "unidad": "UI/l", "rango": "< 40,0", "rango_parsed": {"op": "<", "value": 40.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 17.0, "valor_original": 17.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "0 - 34", "rango_parsed": {"min": 0.0, "max": 34.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 42.0, "valor_original": 42.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "<50", "rango_parsed": {"op": "<", "value": 50.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 26.0, "valor_original": 26.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "< 35", "rango_parsed": {"op": "<", "value": 35.0}, "estado": "ok"}]}, {"nombre": "Bilirrubina directa", "unidad": "mg/dl", "puntos": [{"fecha": "2017-05-13", "valor": 0.26, "valor_original": 0.26, "unidad_original": "mg/dl", "texto": null, "unidad": "mg/dl", "rango": "0,0 - 0,3", "rango_parsed": {"min": 0.0, "max": 0.3}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 0.17, "valor_original": 0.17, "unidad_original": "mg/dL", "texto": null, "unidad": "mg/dL", "rango": "0,0 - 0,5", "rango_parsed": {"min": 0.0, "max": 0.5}, "estado": "ok"}]}, {"nombre": "Bilirrubina indirecta", "unidad": "mg/dl", "puntos": [{"fecha": "2017-05-13", "valor": 1.94, "valor_original": 1.94, "unidad_original": "mg/dl", "texto": null, "unidad": "mg/dl", "rango": "0,0 - 1,1", "rango_parsed": {"min": 0.0, "max": 1.1}, "estado": "high"}]}, {"nombre": "Bilirrubina total", "unidad": "mg/dl", "puntos": [{"fecha": "2017-05-13", "valor": 2.2, "valor_original": 2.2, "unidad_original": "mg/dl", "texto": null, "unidad": "mg/dl", "rango": "0,2 - 1,0", "rango_parsed": {"min": 0.2, "max": 1.0}, "estado": "high"}, {"fecha": "2019-01-17", "valor": 0.83, "valor_original": 0.83, "unidad_original": "mg/dL", "texto": null, "unidad": "mg/dL", "rango": "0,2 - 1,2", "rango_parsed": {"min": 0.2, "max": 1.2}, "estado": "ok"}]}, {"nombre": "FIB-4 (fibrosis hepática)", "unidad": "-", "puntos": [{"fecha": "2026-06-30", "valor": 0.82, "valor_original": 0.82, "unidad_original": "-", "texto": null, "unidad": "-", "rango": "< 1,3", "rango_parsed": {"op": "<", "value": 1.3}, "estado": "ok"}]}, {"nombre": "Fosfatasa alcalina", "unidad": "UI/l", "puntos": [{"fecha": "2017-05-13", "valor": 68.0, "valor_original": 68.0, "unidad_original": "UI/l", "texto": null, "unidad": "UI/l", "rango": "30,0 - 116,0", "rango_parsed": {"min": 30.0, "max": 116.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 191.0, "valor_original": 191.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "Jusqu’à 270", "rango_parsed": null, "estado": "info"}]}, {"nombre": "GGT (gamma-glutamil transferasa)", "unidad": "U/L", "puntos": [{"fecha": "2017-05-13", "valor": 19.0, "valor_original": 19.0, "unidad_original": "UI/l", "texto": null, "unidad": "UI/l", "rango": "15,0 - 85,0", "rango_parsed": {"min": 15.0, "max": 85.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 15.0, "valor_original": 15.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "10 - 40", "rango_parsed": {"min": 10.0, "max": 40.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 10.0, "valor_original": 10.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "8-61", "rango_parsed": {"min": 8.0, "max": 61.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 15.0, "valor_original": 15.0, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "< 55", "rango_parsed": {"op": "<", "value": 55.0}, "estado": "ok"}]}], "ori": [{"nombre": "Bilirrubina en orina", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "", "rango_parsed": null, "estado": "ok"}, {"fecha": "2019-01-17", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "Négatif", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "Cuerpos cetónicos en orina", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "", "rango_parsed": null, "estado": "ok"}, {"fecha": "2019-01-17", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "Négatif", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "Densidad urinaria", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": 1.03, "valor_original": 1.03, "unidad_original": "", "texto": null, "unidad": "", "rango": "1,002 - 1,030", "rango_parsed": {"min": 1.002, "max": 1.03}, "estado": "ok"}]}, {"nombre": "Diagnóstico SARS-CoV-2 (COVID-19)", "unidad": "", "puntos": [{"fecha": "2023-09-12", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "Glucosa en orina", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "", "rango_parsed": null, "estado": "ok"}, {"fecha": "2019-01-17", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "Négatif", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "Hematíes en orina", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "Hematíes en sedimento urinario", "unidad": "/ champ", "puntos": [{"fecha": "2019-01-17", "valor": 45938.0, "valor_original": 45938.0, "unidad_original": "/ champ", "texto": null, "unidad": "/ champ", "rango": "-", "rango_parsed": null, "estado": "info"}]}, {"nombre": "Hemoglobina en orina", "unidad": "", "puntos": [{"fecha": "2019-01-17", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Positif (+)", "unidad": "", "rango": "Négatif", "rango_parsed": null, "estado": "high"}]}, {"nombre": "Leucocitos en orina", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "Leucocitos en sedimento urinario", "unidad": "", "puntos": [{"fecha": "2019-01-17", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Normal", "unidad": "", "rango": "-", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "Microalbúmina", "unidad": "mg/l", "puntos": [{"fecha": "2017-05-13", "valor": 6.9, "valor_original": 6.9, "unidad_original": "mg/l", "texto": null, "unidad": "mg/l", "rango": "< 20,0", "rango_parsed": {"op": "<", "value": 20.0}, "estado": "ok"}]}, {"nombre": "Nitritos en orina", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "", "rango_parsed": null, "estado": "ok"}, {"fecha": "2019-01-17", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "Négatif", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "PSA (antígeno prostático)", "unidad": "µg/L", "puntos": [{"fecha": "2024-07-20", "valor": 0.44, "valor_original": 0.44, "unidad_original": "µg/L", "texto": null, "unidad": "µg/L", "rango": "<4,00", "rango_parsed": {"op": "<", "value": 4.0}, "estado": "ok"}]}, {"nombre": "Proteínas en orina", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "", "rango_parsed": null, "estado": "ok"}, {"fecha": "2019-01-17", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "Négatif", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "Urobilinógeno", "unidad": "mg/dL", "puntos": [{"fecha": "2017-05-13", "valor": 0.2, "valor_original": 0.2, "unidad_original": "mg/dL", "texto": null, "unidad": "mg/dL", "rango": "", "rango_parsed": null, "estado": "info"}, {"fecha": "2019-01-17", "valor": null, "valor_original": null, "unidad_original": "", "texto": "Négatif", "unidad": "", "rango": "Négatif", "rango_parsed": null, "estado": "ok"}]}, {"nombre": "pH urinario", "unidad": "", "puntos": [{"fecha": "2017-05-13", "valor": 5.5, "valor_original": 5.5, "unidad_original": "", "texto": null, "unidad": "", "rango": "", "rango_parsed": null, "estado": "info"}, {"fecha": "2019-01-17", "valor": 5.0, "valor_original": 5.0, "unidad_original": "", "texto": null, "unidad": "", "rango": "5,0 - 8,0", "rango_parsed": {"min": 5.0, "max": 8.0}, "estado": "ok"}]}], "bioq": [{"nombre": "CK (creatina quinasa)", "unidad": "U/L", "puntos": [{"fecha": "2019-01-17", "valor": 67.4, "valor_original": 67.4, "unidad_original": "U/L", "texto": null, "unidad": "U/L", "rango": "38 - 174", "rango_parsed": {"min": 38.0, "max": 174.0}, "estado": "ok"}]}, {"nombre": "Calcio", "unidad": "mg/dL", "puntos": [{"fecha": "2019-01-17", "valor": 9.6, "valor_original": 9.6, "unidad_original": "mg/dL", "texto": null, "unidad": "mg/dL", "rango": "8,4 - 10,2", "rango_parsed": {"min": 8.4, "max": 10.2}, "estado": "ok"}]}, {"nombre": "Cloro", "unidad": "mmol/L", "puntos": [{"fecha": "2024-07-20", "valor": 104.0, "valor_original": 104.0, "unidad_original": "mmol/L", "texto": null, "unidad": "mmol/L", "rango": "98-107", "rango_parsed": {"min": 98.0, "max": 107.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 102.0, "valor_original": 102.0, "unidad_original": "mmol/L", "texto": null, "unidad": "mmol/L", "rango": "98-107", "rango_parsed": {"min": 98.0, "max": 107.0}, "estado": "ok"}]}, {"nombre": "Fósforo", "unidad": "mg/dL", "puntos": [{"fecha": "2019-01-17", "valor": 3.4, "valor_original": 3.4, "unidad_original": "mg/dL", "texto": null, "unidad": "mg/dL", "rango": "2,5 - 4,8", "rango_parsed": {"min": 2.5, "max": 4.8}, "estado": "ok"}]}, {"nombre": "LDH (lactato deshidrogenasa)", "unidad": "UI/l", "puntos": [{"fecha": "2017-05-13", "valor": 117.0, "valor_original": 117.0, "unidad_original": "UI/l", "texto": null, "unidad": "UI/l", "rango": "85,0 - 227,0", "rango_parsed": {"min": 85.0, "max": 227.0}, "estado": "ok"}]}, {"nombre": "Magnesio", "unidad": "mg/dl", "puntos": [{"fecha": "2017-05-13", "valor": 2.0, "valor_original": 2.0, "unidad_original": "mg/dl", "texto": null, "unidad": "mg/dl", "rango": "1,6 - 2,4", "rango_parsed": {"min": 1.6, "max": 2.4}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 2.0, "valor_original": 2.0, "unidad_original": "mg/dL", "texto": null, "unidad": "mg/dL", "rango": "1,5 - 2,4", "rango_parsed": {"min": 1.5, "max": 2.4}, "estado": "ok"}]}, {"nombre": "Potasio", "unidad": "mmol/L", "puntos": [{"fecha": "2017-05-13", "valor": 4.2, "valor_original": 4.2, "unidad_original": "mEq/l", "texto": null, "unidad": "mEq/l", "rango": "3,50 - 5,40", "rango_parsed": {"min": 3.5, "max": 5.4}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 4.1, "valor_original": 4.1, "unidad_original": "mEq/L", "texto": null, "unidad": "mEq/L", "rango": "3,5 - 5,1", "rango_parsed": {"min": 3.5, "max": 5.1}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 4.4, "valor_original": 4.4, "unidad_original": "mmol/L", "texto": null, "unidad": "mmol/L", "rango": "3,4-4,5", "rango_parsed": {"min": 3.4, "max": 4.5}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 4.6, "valor_original": 4.6, "unidad_original": "mmol/L", "texto": null, "unidad": "mmol/L", "rango": "3,4-4,5", "rango_parsed": {"min": 3.4, "max": 4.5}, "estado": "high"}, {"fecha": "2026-06-30", "valor": 4.1, "valor_original": 4.1, "unidad_original": "mmol/L", "texto": null, "unidad": "mmol/L", "rango": "3,5-4,5", "rango_parsed": {"min": 3.5, "max": 4.5}, "estado": "ok"}]}, {"nombre": "Sodio", "unidad": "mmol/L", "puntos": [{"fecha": "2017-05-13", "valor": 139.0, "valor_original": 139.0, "unidad_original": "mEq/l", "texto": null, "unidad": "mEq/l", "rango": "135,0 - 145,0", "rango_parsed": {"min": 135.0, "max": 145.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 146.0, "valor_original": 146.0, "unidad_original": "mEq/L", "texto": null, "unidad": "mEq/L", "rango": "136 - 145", "rango_parsed": {"min": 136.0, "max": 145.0}, "estado": "high"}, {"fecha": "2024-07-20", "valor": 140.0, "valor_original": 140.0, "unidad_original": "mmol/L", "texto": null, "unidad": "mmol/L", "rango": "136-145", "rango_parsed": {"min": 136.0, "max": 145.0}, "estado": "ok"}, {"fecha": "2025-01-17", "valor": 139.0, "valor_original": 139.0, "unidad_original": "mmol/L", "texto": null, "unidad": "mmol/L", "rango": "136-145", "rango_parsed": {"min": 136.0, "max": 145.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 142.0, "valor_original": 142.0, "unidad_original": "mmol/L", "texto": null, "unidad": "mmol/L", "rango": "136-145", "rango_parsed": {"min": 136.0, "max": 145.0}, "estado": "ok"}]}, {"nombre": "Zinc", "unidad": "µg/dl", "puntos": [{"fecha": "2017-05-13", "valor": 78.56, "valor_original": 78.56, "unidad_original": "µg/dl", "texto": null, "unidad": "µg/dl", "rango": "70,0 - 120,0", "rango_parsed": {"min": 70.0, "max": 120.0}, "estado": "ok"}]}], "ren": [{"nombre": "Creatinina", "unidad": "µmol/L", "puntos": [{"fecha": "2017-05-13", "valor": 78.676, "valor_original": 0.89, "unidad_original": "mg/dl", "texto": null, "unidad": "µmol/L", "rango": "0,70 - 1,40", "rango_parsed": {"min": 0.7, "max": 1.4}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 102.544, "valor_original": 1.16, "unidad_original": "mg/dL", "texto": null, "unidad": "µmol/L", "rango": "0,5 - 1,3", "rango_parsed": {"min": 0.5, "max": 1.3}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 76.908, "valor_original": 8.7, "unidad_original": "mg/L", "texto": null, "unidad": "µmol/L", "rango": "6,7-11,7", "rango_parsed": {"min": 6.7, "max": 11.7}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 77.6, "valor_original": 77.6, "unidad_original": "µmol/L", "texto": null, "unidad": "µmol/L", "rango": "64,0-104,0", "rango_parsed": {"min": 64.0, "max": 104.0}, "estado": "ok"}]}, {"nombre": "Filtrado glomerular (DFG)", "unidad": "mL/min/1,73m2", "puntos": [{"fecha": "2017-05-13", "valor": 60.0, "valor_original": 60.0, "unidad_original": "mL/min/1.73m²", "texto": null, "unidad": "mL/min/1.73m²", "rango": ">60,0", "rango_parsed": {"op": ">", "value": 60.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 60.0, "valor_original": 60.0, "unidad_original": "mL/min/1,73 m²", "texto": null, "unidad": "mL/min/1,73 m²", "rango": ">60", "rango_parsed": {"op": ">", "value": 60.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 113.0, "valor_original": 113.0, "unidad_original": "mL/min/1,73 m2", "texto": null, "unidad": "mL/min/1,73 m2", "rango": ">90", "rango_parsed": {"op": ">", "value": 90.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 100.0, "valor_original": 100.0, "unidad_original": "mL/min/1,73 m2", "texto": null, "unidad": "mL/min/1,73 m2", "rango": ">90", "rango_parsed": {"op": ">", "value": 90.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 111.0, "valor_original": 111.0, "unidad_original": "mL/min/1,73m2", "texto": null, "unidad": "mL/min/1,73m2", "rango": "-", "rango_parsed": null, "estado": "info"}]}, {"nombre": "Urea", "unidad": "mmol/L", "puntos": [{"fecha": "2017-05-13", "valor": 5.976, "valor_original": 36.0, "unidad_original": "mg/dl", "texto": null, "unidad": "mmol/L", "rango": "15,0 - 40,0", "rango_parsed": {"min": 15.0, "max": 40.0}, "estado": "ok"}, {"fecha": "2019-01-17", "valor": 6.64, "valor_original": 40.0, "unidad_original": "mg/dL", "texto": null, "unidad": "mmol/L", "rango": "10 - 50", "rango_parsed": {"min": 10.0, "max": 50.0}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 5.661, "valor_original": 0.34, "unidad_original": "g/L", "texto": null, "unidad": "mmol/L", "rango": "0,17-0,49", "rango_parsed": {"min": 0.17, "max": 0.49}, "estado": "ok"}]}], "hor": [{"nombre": "FSH", "unidad": "UI/L", "puntos": [{"fecha": "2026-06-30", "valor": 3.9, "valor_original": 3.9, "unidad_original": "UI/L", "texto": null, "unidad": "UI/L", "rango": "1,0-12,0", "rango_parsed": {"min": 1.0, "max": 12.0}, "estado": "ok"}]}, {"nombre": "LH", "unidad": "UI/L", "puntos": [{"fecha": "2026-06-30", "valor": 4.0, "valor_original": 4.0, "unidad_original": "UI/L", "texto": null, "unidad": "UI/L", "rango": "0,6-12,1", "rango_parsed": {"min": 0.6, "max": 12.1}, "estado": "ok"}]}, {"nombre": "Serotonina", "unidad": "ng/ml", "puntos": [{"fecha": "2017-05-13", "valor": 187.78, "valor_original": 187.78, "unidad_original": "ng/ml", "texto": null, "unidad": "ng/ml", "rango": "50,0 - 200,7", "rango_parsed": {"min": 50.0, "max": 200.7}, "estado": "ok"}]}, {"nombre": "Testosterona", "unidad": "ng/mL", "puntos": [{"fecha": "2024-07-20", "valor": 4.64, "valor_original": 4.64, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": "2,80-8,00", "rango_parsed": {"min": 2.8, "max": 8.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 4.75, "valor_original": 4.75, "unidad_original": "ng/mL", "texto": null, "unidad": "ng/mL", "rango": "2,49-8,36", "rango_parsed": {"min": 2.49, "max": 8.36}, "estado": "ok"}]}], "tir": [{"nombre": "T3 libre", "unidad": "ng/L", "puntos": [{"fecha": "2026-06-30", "valor": 2.59, "valor_original": 2.59, "unidad_original": "ng/L", "texto": null, "unidad": "ng/L", "rango": "1,58-3,91", "rango_parsed": {"min": 1.58, "max": 3.91}, "estado": "ok"}]}, {"nombre": "T4 libre", "unidad": "ng/L", "puntos": [{"fecha": "2017-05-13", "valor": 12.4, "valor_original": 1.24, "unidad_original": "ng/dl", "texto": null, "unidad": "ng/L", "rango": "0,85 - 1,76", "rango_parsed": {"min": 0.85, "max": 1.76}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 13.0, "valor_original": 1.3, "unidad_original": "ng/dL", "texto": null, "unidad": "ng/L", "rango": "0,92-1,68", "rango_parsed": {"min": 0.92, "max": 1.68}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 11.32, "valor_original": 11.32, "unidad_original": "ng/L", "texto": null, "unidad": "ng/L", "rango": "7,00-14,80", "rango_parsed": {"min": 7.0, "max": 14.8}, "estado": "ok"}]}, {"nombre": "TSH (tirotropina)", "unidad": "mUI/L", "puntos": [{"fecha": "2017-05-13", "valor": 1.1, "valor_original": 1.1, "unidad_original": "mU/L", "texto": null, "unidad": "mU/L", "rango": "0,55 - 4,78", "rango_parsed": {"min": 0.55, "max": 4.78}, "estado": "ok"}, {"fecha": "2022-10-21", "valor": 1.71, "valor_original": 1.71, "unidad_original": "mUI/L", "texto": null, "unidad": "mUI/L", "rango": "0,270-4,200", "rango_parsed": {"min": 0.27, "max": 4.2}, "estado": "ok"}, {"fecha": "2024-07-20", "valor": 2.17, "valor_original": 2.17, "unidad_original": "mUI/L", "texto": null, "unidad": "mUI/L", "rango": "0,400-4,000", "rango_parsed": {"min": 0.4, "max": 4.0}, "estado": "ok"}, {"fecha": "2026-06-30", "valor": 1.794, "valor_original": 1.794, "unidad_original": "mUI/L", "texto": null, "unidad": "mUI/L", "rango": "0,400-4,000", "rango_parsed": {"min": 0.4, "max": 4.0}, "estado": "ok"}]}]}}</script>
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const DATA = JSON.parse(document.getElementById('data-json').textContent);
+
+// ============================================================
+// Family grouping: several marker name-variants (e.g. "Linfocitos %"
+// and "Linfocitos (valor absoluto)") share the same lifestyle guidance.
+// ============================================================
+const FAMILY = {
+  'Glucosa (glicemia)':'glucosa',
+  'Hemoglobina glicosilada (HbA1c)':'hba1c',
+  'Colesterol total':'col_total',
+  'Colesterol HDL':'col_hdl',
+  'Colesterol LDL':'col_ldl',
+  'Colesterol no-HDL':'col_ldl',
+  'Triglicéridos':'trigliceridos',
+  'Ácido úrico':'acido_urico',
+  'ALAT / GPT (transaminasa)':'transaminasas',
+  'ASAT / GOT (transaminasa)':'transaminasas',
+  'GGT (gamma-glutamil transferasa)':'ggt',
+  'Bilirrubina total':'bilirrubina',
+  'Bilirrubina directa':'bilirrubina',
+  'Bilirrubina indirecta':'bilirrubina',
+  'Fosfatasa alcalina':'fosfatasa',
+  'FIB-4 (fibrosis hepática)':'fib4',
+  'Creatinina':'creatinina',
+  'Urea':'urea',
+  'Filtrado glomerular (DFG)':'dfg',
+  'TSH (tirotropina)':'tsh',
+  'T4 libre':'t4t3',
+  'T3 libre':'t4t3',
+  'Testosterona':'testosterona',
+  'FSH':'fsh_lh',
+  'LH':'fsh_lh',
+  'Vitamina D (25-OH)':'vitd',
+  'Vitamina B12':'b12',
+  'Ácido fólico':'folico',
+  'Vitamina E':'vite',
+  'Hierro sérico':'hierro',
+  'Ferritina':'ferritina',
+  'Hemoglobina':'hb',
+  'Hematocrito':'hb',
+  'Hematíes':'hb',
+  'VCM (volumen corpuscular medio)':'indices_rojos',
+  'HCM (hemoglobina corpuscular media)':'indices_rojos',
+  'CCMH':'indices_rojos',
+  'IDR (amplitud distribución eritrocitaria)':'indices_rojos',
+  'Leucocitos':'leucocitos',
+  'Linfocitos %':'leucocitos','Linfocitos (valor absoluto)':'leucocitos',
+  'Monocitos %':'leucocitos','Monocitos (valor absoluto)':'leucocitos',
+  'Neutrófilos %':'leucocitos','Neutrófilos (valor absoluto)':'leucocitos',
+  'Eosinófilos %':'leucocitos','Eosinófilos (valor absoluto)':'leucocitos',
+  'Basófilos %':'leucocitos','Basófilos (valor absoluto)':'leucocitos',
+  'Neutrófilos segmentados %':'leucocitos','Cayados':'leucocitos',
+  'Plaquetas':'plaquetas',
+  'VPM (volumen plaquetario medio)':'plaquetas',
+  'VSG (velocidad de sedimentación)':'vsg',
+  'Sodio':'electrolitos','Potasio':'electrolitos','Cloro':'electrolitos',
+  'Calcio':'calcio',
+  'Magnesio':'magnesio',
+  'Fósforo':'fosforo',
+  'Zinc':'zinc',
+  'CK (creatina quinasa)':'ck',
+  'LDH (lactato deshidrogenasa)':'ldh',
+  'PSA (antígeno prostático)':'psa',
+  'Microalbúmina':'microalbumina',
+};
+
+// ============================================================
+// Tips knowledge base — general, educational lifestyle guidance.
+// Not a diagnosis. Always framed as "esto puede ayudar", never certainty.
+// ============================================================
+const TIPS = {
+  glucosa: {
+    high:{a:'Prioriza fibra e integrales, reduce azúcares y ultraprocesados; reparte las comidas para evitar picos.', d:'Caminar 10–15 min tras las comidas y sumar 150 min/semana de cardio moderado ayuda a mejorar la sensibilidad a la insulina.'},
+    low:{a:'Evita ayunos muy largos; si notas mareo o temblor, un carbohidrato de acción rápida puede aliviarlo.', d:'Antes de entrenar en ayunas, valóralo con calma — el ejercicio intenso puede bajarla más.'}},
+  hba1c: {
+    high:{a:'Refleja el promedio de 3 meses: cuida constancia en fibra, proteína y menos azúcar simple más que un solo día.', d:'Ejercicio regular (no solo puntual) es lo que más mueve esta cifra a medio plazo.'}},
+  col_total: {
+    high:{a:'Reduce grasas saturadas (embutidos, bollería) y aumenta grasas insaturadas (aceite de oliva, frutos secos, pescado azul).', d:'El ejercicio aeróbico regular ayuda a mejorar el perfil lipídico global.'}},
+  col_hdl: {
+    low:{a:'El HDL ("bueno") sube con grasas insaturadas (aceite de oliva, aguacate, pescado azul) y bajando el sedentarismo.', d:'El ejercicio aeróbico es de los factores que más eleva el HDL.'}},
+  col_ldl: {
+    high:{a:'Reduce grasas saturadas y trans; suma fibra soluble (avena, legumbres) que ayuda a bajar el LDL.', d:'150 min/semana de actividad aeróbica moderada contribuye a reducirlo.'}},
+  trigliceridos: {
+    high:{a:'Los triglicéridos responden mucho al azúcar, alcohol y ultraprocesados — moderarlos suele notarse rápido.', d:'El ejercicio aeróbico y perder algo de grasa visceral, si aplica, ayuda especialmente aquí.'}},
+  acido_urico: {
+    high:{a:'Modera carnes rojas, vísceras, mariscos, fructosa y alcohol (sobre todo cerveza); mantén buena hidratación.', d:'Evita esfuerzo físico muy intenso y deshidratación puntual, que pueden elevarlo transitoriamente.'}},
+  transaminasas: {
+    high:{a:'Modera alcohol y ultraprocesados; vigila el uso de suplementos o medicamentos hepatotóxicos sin supervisión.', d:'El ejercicio regular y mantener un peso saludable ayudan a la salud hepática.'}},
+  ggt: {
+    high:{a:'Muy sensible al alcohol, incluso en cantidades moderadas — reducirlo suele bajarla con relativa rapidez.', d:'Actividad física regular apoya la función hepática.'}},
+  bilirrubina: {
+    high:{a:'Puede subir con ayuno prolongado o deshidratación en personas con Gilbert; mantener comidas regulares suele ayudar.', d:'No requiere ajuste deportivo específico salvo indicación médica.'}},
+  fosfatasa: {
+    high:{a:'Puede reflejar hígado, hueso o crecimiento óseo; sin otros síntomas, no suele requerir cambios de dieta específicos.', d:'—'}},
+  fib4: {
+    high:{a:'Es un índice de riesgo de fibrosis hepática combinando varios valores; coméntalo con tu médico si sube de forma sostenida.', d:'El ejercicio regular y evitar alcohol son las medidas de mayor impacto.'}},
+  creatinina: {
+    high:{a:'Mantén buena hidratación; modera el exceso de proteína animal y creatina como suplemento si la tomas.', d:'Evita entrenamientos muy intensos justo antes de la analítica — pueden elevarla transitoriamente.'}},
+  urea: {
+    high:{a:'Puede subir con dietas muy altas en proteína o deshidratación; equilibrar ambas suele normalizarla.', d:'Buena hidratación antes y después de entrenar.'}},
+  dfg: {
+    low:{a:'Cuida la hidratación y modera el exceso de proteína y sal si el valor tiende a bajar.', d:'Ejercicio moderado regular es beneficioso para la función renal.'}},
+  tsh: {
+    high:{a:'Puede indicar hipotiroidismo subclínico; el yodo (sal yodada, pescado) y selenio (nueces de Brasil) apoyan la tiroides.', d:'Sin restricciones deportivas específicas; el ejercicio ayuda al metabolismo general.'},
+    low:{a:'Puede indicar hipertiroidismo; conviene valorarlo con tu médico antes de suplementar yodo.', d:'Evita cafeína y estimulantes en exceso si notas taquicardia o nerviosismo.'}},
+  t4t3: {
+    high:{a:'Junto a la TSH, ayuda a perfilar la función tiroidea — coméntalo con tu médico en conjunto.', d:'—'},
+    low:{a:'Junto a la TSH, ayuda a perfilar la función tiroidea — coméntalo con tu médico en conjunto.', d:'—'}},
+  testosterona: {
+    low:{a:'Sueño suficiente, zinc y vitamina D adecuados, y mantener grasa corporal en rango saludable influyen en sus niveles.', d:'El entrenamiento de fuerza (pesas) es de los estímulos que más apoya la testosterona natural.'}},
+  fsh_lh: {
+    high:{a:'Forman parte del eje hormonal reproductivo; su interpretación depende del contexto clínico — coméntalo con tu médico.', d:'—'}},
+  vitd: {
+    low:{a:'Pescado azul, huevo y lácteos fortificados aportan algo, pero la fuente principal es la exposición solar regular.', d:'Actividad al aire libre 15–20 min varias veces por semana ayuda a mantener niveles adecuados.'},
+    high:{a:'Si tomas suplemento de vitamina D, este valor sugiere revisar la dosis con tu médico — el exceso también tiene riesgos.', d:'—'}},
+  b12: {
+    low:{a:'Carne, huevo, lácteos y pescado son las fuentes principales; en dietas vegetarianas/veganas suele requerir suplemento.', d:'—'}},
+  folico: {
+    low:{a:'Verduras de hoja verde, legumbres y frutos secos son buenas fuentes de ácido fólico.', d:'—'}},
+  vite: {
+    low:{a:'Frutos secos, semillas y aceites vegetales son las principales fuentes de vitamina E.', d:'—'}},
+  hierro: {
+    low:{a:'Carnes rojas, legumbres y verduras de hoja verde ayudan; combinar con vitamina C mejora su absorción.', d:'El ejercicio de alta intensidad sostenido puede aumentar las pérdidas de hierro — vigila si entrenas mucho volumen.'}},
+  ferritina: {
+    low:{a:'Refleja los depósitos de hierro; si es baja junto con hierro sérico bajo, conviene priorizar alimentos ricos en hierro.', d:'—'},
+    high:{a:'Puede subir por inflamación, no solo por exceso de hierro — no conviene suplementar sin confirmarlo con tu médico.', d:'—'}},
+  hb: {
+    low:{a:'Hierro, B12 y ácido fólico son claves para la producción de glóbulos rojos; revisa esos marcadores en conjunto.', d:'Si hay anemia, modera el ejercicio de alta intensidad hasta corregirla.'},
+    high:{a:'Puede relacionarse con deshidratación, altitud o tabaquismo; buena hidratación ayuda a descartarlo.', d:'—'}},
+  indices_rojos: {
+    high:{a:'Suelen acompañar a otros valores de la serie roja; interprétalos junto a hemoglobina y hematocrito.', d:'—'},
+    low:{a:'Suelen acompañar a otros valores de la serie roja; interprétalos junto a hemoglobina y hematocrito.', d:'—'}},
+  leucocitos: {
+    high:{a:'Puede reflejar un proceso infeccioso o inflamatorio reciente; suele normalizarse solo al resolverse.', d:'Si te sientes enfermo/a, es buen momento para bajar la intensidad de entrenamiento.'},
+    low:{a:'Vigila si coincide con cansancio o infecciones frecuentes; descansar bien apoya el sistema inmune.', d:'—'}},
+  plaquetas: {
+    high:{a:'Buena hidratación; si es persistente conviene comentarlo con tu médico.', d:'—'},
+    low:{a:'Evita fármacos que afecten la coagulación sin supervisión médica si el valor está bajo.', d:'Modera actividades de alto riesgo de golpes si el valor es muy bajo.'}},
+  vsg: {
+    high:{a:'Marcador inespecífico de inflamación; suele acompañar a un proceso puntual (infección, inflamación).', d:'—'}},
+  electrolitos: {
+    high:{a:'Modera el sodio de ultraprocesados y embutidos; mantén buena hidratación.', d:'Repón electrolitos si entrenas mucho tiempo con sudoración alta.'},
+    low:{a:'Puede relacionarse con hidratación excesiva sin electrolitos o pérdidas digestivas; coméntalo si persiste.', d:'—'}},
+  calcio: {
+    low:{a:'Lácteos, verduras de hoja verde y pescado con espina son buenas fuentes de calcio.', d:'El ejercicio con carga (pesas, caminar) ayuda a la salud ósea junto al calcio.'}},
+  magnesio: {
+    low:{a:'Frutos secos, legumbres, cereales integrales y verduras de hoja verde son ricos en magnesio.', d:'—'}},
+  fosforo: {
+    high:{a:'Suele relacionarse con exceso de ultraprocesados (fosfatos añadidos) o función renal.', d:'—'}},
+  zinc: {
+    low:{a:'Carnes, legumbres, semillas de calabaza y frutos secos aportan zinc.', d:'—'}},
+  ck: {
+    high:{a:'Puede subir tras entrenamientos intensos o poco habituales — no siempre indica un problema.', d:'Si acabas de hacer ejercicio de fuerza intenso, repetir la analítica tras unos días de descanso da una lectura más fiable.'}},
+  ldh: {
+    high:{a:'Marcador inespecífico (aparece en muchos tejidos); interprétalo junto al resto del panel.', d:'—'}},
+  psa: {
+    high:{a:'Puede elevarse tras actividad como ciclismo o eyaculación reciente además de causas prostáticas — coméntalo con tu médico si sube.', d:'—'}},
+  microalbumina: {
+    high:{a:'Puede ser un marcador temprano de función renal; buena hidratación y control de tensión arterial ayudan.', d:'—'}},
+};
+
+const GROUP_ORDER = ['hema','bioq','lip','hep','ren','tir','hor','vit','ori'];
+
+// ============================================================
+// Helpers
+// ============================================================
+function fmtDate(iso){
+  const [y,m,d]=iso.split('-');
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${d} ${meses[parseInt(m,10)-1]} ${y}`;
+}
+function lastNumericPoint(points){
+  for(let i=points.length-1;i>=0;i--){ if(points[i].valor!==null) return points[i]; }
+  return points[points.length-1];
+}
+function statusColor(st){
+  return {high:'var(--bad)',low:'var(--warn)',ok:'var(--good)',info:'var(--ink-faint)'}[st]||'var(--ink-faint)';
+}
+function statusLabel(st){
+  return {high:'Alto',low:'Bajo',ok:'En rango',info:'Info'}[st]||'Info';
+}
+
+// near-boundary detection for the "media" priority watchlist
+function nearBoundary(point){
+  if(point.estado!=='ok' || !point.rango_parsed || point.valor===null) return false;
+  const r=point.rango_parsed, v=point.valor;
+  if(r.min!==undefined && r.max!==undefined){
+    const span=r.max-r.min; if(span<=0) return false;
+    const distEdge=Math.min(v-r.min, r.max-v);
+    return (distEdge/span) < 0.12;
+  }
+  if(r.op){
+    if(r.op.indexOf('<')===0) return v > r.value*0.85;
+    if(r.op.indexOf('>')===0) return v < r.value*1.15;
+  }
+  return false;
+}
+
+function tipFor(name, status){
+  const fam = FAMILY[name];
+  if(!fam || !TIPS[fam]) return null;
+  const t = TIPS[fam][status];
+  if(!t) return null;
+  return t;
+}
+
+// ============================================================
+// Build flat marker list with computed "last" state
+// ============================================================
+let ALL_MARKERS = [];
+GROUP_ORDER.forEach(g=>{
+  (DATA.grupos[g]||[]).forEach(m=>{
+    const last = lastNumericPoint(m.puntos);
+    ALL_MARKERS.push({
+      nombre:m.nombre, unidad:m.unidad, puntos:m.puntos, group:g, last
+    });
+  });
+});
+
+// ============================================================
+// Header summary
+// ============================================================
+document.getElementById('markerTotal').textContent = ALL_MARKERS.length;
+const allDates = ALL_MARKERS.flatMap(m=>m.puntos.map(p=>p.fecha));
+document.getElementById('lastSyncDate').textContent = fmtDate(allDates.sort().slice(-1)[0]);
+
+const nHigh = ALL_MARKERS.filter(m=>m.last.estado==='high'||m.last.estado==='low').length;
+const nWatch = ALL_MARKERS.filter(m=>nearBoundary(m.last)).length;
+const nOk = ALL_MARKERS.filter(m=>m.last.estado==='ok' && !nearBoundary(m.last)).length;
+
+document.getElementById('summaryRow').innerHTML = `
+  <div class="summary-chip"><div class="swatch" style="background:var(--bad)"></div><div><div class="num">${nHigh}</div><div class="lbl">fuera de rango</div></div></div>
+  <div class="summary-chip"><div class="swatch" style="background:var(--warn)"></div><div><div class="num">${nWatch}</div><div class="lbl">a vigilar</div></div></div>
+  <div class="summary-chip"><div class="swatch" style="background:var(--good)"></div><div><div class="num">${nOk}</div><div class="lbl">en rango</div></div></div>
+`;
+
+// ============================================================
+// Card + chart rendering
+// ============================================================
+let chartInstances = [];
+
+function renderCard(m){
+  const st = m.last.estado;
+  const tip = tipFor(m.nombre, st==='high'||st==='low' ? st : null);
+  const canvasId = 'c_'+Math.random().toString(36).slice(2);
+  const valText = m.last.valor!==null ? m.last.valor : (m.last.texto||'—');
+  const lastYear = parseInt(m.last.fecha.slice(0,4),10);
+  const isOld = (2026 - lastYear) >= 2;
+  const div = document.createElement('div');
+  div.className = `card st-${st}`;
+  div.innerHTML = `
+    <div class="card-top">
+      <div class="card-name">${m.nombre}</div>
+      <div class="badge st-${st}">${statusLabel(st)}</div>
+    </div>
+    <div class="card-value-row">
+      <span class="card-value">${valText}</span>
+      <span class="card-unit">${m.unidad||''}</span>
+    </div>
+    <div class="card-range">Rango: ${m.last.rango || '—'}</div>
+    <div class="card-chart"><canvas id="${canvasId}"></canvas></div>
+    <div class="card-date">Último dato: ${fmtDate(m.last.fecha)} · ${m.puntos.length} mediciones históricas${isOld ? ' · <span style="color:var(--ink-faint)">dato antiguo, no reciente</span>':''}</div>
+    ${tip ? `<div class="card-tip tip-${st}">
+        ${tip.a && tip.a!=='—' ? `<span class="tip-cat">🍽️ Alimentación</span>${tip.a}`:''}
+        ${tip.d && tip.d!=='—' ? `<span class="tip-cat">🏃 Deporte</span>${tip.d}`:''}
+      </div>` : ''}
+  `;
+  requestAnimationFrame(()=>drawChart(canvasId, m));
+  return div;
+}
+
+function drawChart(canvasId, m){
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  const pts = m.puntos.filter(p=>p.valor!==null);
+  if(pts.length<1) return;
+  const colors = pts.map(p=>statusColor(p.estado).replace('var(--bad)','#FF5C6C').replace('var(--warn)','#FF9F1C').replace('var(--good)','#0FB88A').replace('var(--ink-faint)','#9AA1B9'));
+  const inst = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels: pts.map(p=>fmtDate(p.fecha)),
+      datasets:[{
+        data: pts.map(p=>p.valor),
+        borderColor:'#4C5FFF',
+        borderWidth:2,
+        pointRadius: pts.map((p,i)=> i===pts.length-1?4:2.5),
+        pointBackgroundColor: colors,
+        pointBorderColor: colors,
+        tension:0.35,
+        fill:true,
+        backgroundColor:'rgba(76,95,255,0.06)',
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{
+        callbacks:{ label:(c)=> `${c.parsed.y} ${m.unidad||''}` }
+      }},
+      scales:{
+        x:{display:false},
+        y:{display:false}
+      },
+      elements:{line:{capBezierPoints:true}}
+    }
+  });
+  chartInstances.push(inst);
+}
+
+// ============================================================
+// Priority sections
+// ============================================================
+function renderPriority(){
+  const highGrid = document.getElementById('highGrid');
+  const medGrid = document.getElementById('medGrid');
+  highGrid.innerHTML=''; medGrid.innerHTML='';
+
+  const highList = ALL_MARKERS.filter(m=>m.last.estado==='high'||m.last.estado==='low')
+    .sort((a,b)=> b.last.fecha.localeCompare(a.last.fecha));
+  const medList = ALL_MARKERS.filter(m=>nearBoundary(m.last))
+    .sort((a,b)=> b.last.fecha.localeCompare(a.last.fecha));
+
+  document.getElementById('highCount').textContent = highList.length;
+  document.getElementById('medCount').textContent = medList.length;
+
+  if(highList.length===0){
+    highGrid.innerHTML = `<div class="empty-note">✅ Ningún marcador está fuera de rango en la última analítica.</div>`;
+  } else {
+    highList.forEach(m=>highGrid.appendChild(renderCard(m)));
+  }
+  if(medList.length===0){
+    medGrid.innerHTML = `<div class="empty-note" style="background:var(--surface-2);color:var(--ink-soft)">Ningún marcador está cerca del límite del rango.</div>`;
+  } else {
+    medList.forEach(m=>medGrid.appendChild(renderCard(m)));
+  }
+}
+
+// ============================================================
+// Tabs + category grid
+// ============================================================
+function renderTabs(){
+  const tabsEl = document.getElementById('tabs');
+  const cats = [{key:'all', label:'Todos', icon:'🔎'}].concat(
+    GROUP_ORDER.map(g=>({key:g, label:DATA.meta[g].label, icon:DATA.meta[g].icon}))
+  );
+  tabsEl.innerHTML = cats.map(c=>{
+    const count = c.key==='all' ? ALL_MARKERS.length : ALL_MARKERS.filter(m=>m.group===c.key).length;
+    return `<button class="tab-btn" data-key="${c.key}">${c.icon} ${c.label} <span class="tab-count">${count}</span></button>`;
+  }).join('');
+  tabsEl.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabsEl.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderGrid(btn.dataset.key);
+    });
+  });
+  tabsEl.querySelector('.tab-btn').classList.add('active');
+}
+
+function renderGrid(key){
+  chartInstances.forEach(c=>c.destroy());
+  chartInstances = [];
+  const gridEl = document.getElementById('grid');
+  gridEl.innerHTML='';
+  const list = (key==='all' ? ALL_MARKERS : ALL_MARKERS.filter(m=>m.group===key))
+    .slice().sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  list.forEach(m=>gridEl.appendChild(renderCard(m)));
+}
+
+// ============================================================
+// Init
+// ============================================================
+renderPriority();
+renderTabs();
+renderGrid('all');
+
+</script>
+</body>
+</html>
